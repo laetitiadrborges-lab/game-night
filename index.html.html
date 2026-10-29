@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Catalogue de jeux de soirée – prototype</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#FFFFFF;--soft:#F4EFFC;--ink:#2B1B4A;--mut:#6E6486;--line:#E6DDF5;--acc:#6A3FC4;--deep:#2F1A66;--onacc:#fff;--nav:rgba(255,255,255,.82);box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#150F26;--soft:#211838;--ink:#F3EEFF;--mut:#B8AED6;--line:#352A57;--acc:#9B7BF0;--deep:#241448;--onacc:#150F26;--nav:rgba(21,15,38,.82)}}
+:root[data-theme="dark"]{--bg:#150F26;--soft:#211838;--ink:#F3EEFF;--mut:#B8AED6;--line:#352A57;--acc:#9B7BF0;--deep:#241448;--onacc:#150F26;--nav:rgba(21,15,38,.82)}
+html{scroll-padding-top:80px;scroll-behavior:smooth}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.6 "DM Sans",system-ui,sans-serif;overflow-x:hidden}
+.wrap{max-width:1160px;margin:0 auto;padding:0 18px}
+nav{position:sticky;top:0;z-index:20;background:var(--nav);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+nav .wrap{display:flex;align-items:center;justify-content:space-between;padding-top:12px;padding-bottom:12px;gap:12px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px;font:700 21px "Playfair Display",Georgia,serif;color:var(--ink);text-decoration:none}
+.dot{width:30px;height:30px;border-radius:50%;background:conic-gradient(from 200deg,#6A3FC4,#C9A8F7,#6A3FC4)}
+nav .l a{color:var(--ink);text-decoration:none;font-size:14px;margin-left:20px}
+a:focus-visible,button:focus-visible{outline:3px solid var(--acc);outline-offset:3px}
+h1,h2,h3{font-family:"Playfair Display",Georgia,serif;margin:0;color:var(--ink)}
+h1{font-size:clamp(40px,7vw,82px);line-height:1;letter-spacing:-.02em}
+h1 em{color:var(--acc);font-style:italic}
+.eb{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--acc);font-weight:700;margin-bottom:10px}
+.hero{position:relative;padding:48px 0 30px;display:grid;grid-template-columns:1.1fr .9fr;gap:30px;align-items:center}
+.hero:before{content:"";position:absolute;z-index:-1;left:-10%;top:-20%;width:70%;height:120%;background:radial-gradient(closest-side,rgba(154,120,240,.28),transparent)}
+@media(max-width:860px){.hero{grid-template-columns:1fr}}
+.hero p.s{font-size:19px;max-width:46ch;margin:18px 0 24px;color:var(--mut)}
+.btn{display:inline-block;border:0;background:var(--acc);color:var(--onacc);border-radius:999px;padding:13px 26px;font:500 15px "DM Sans",sans-serif;cursor:pointer;text-decoration:none;margin:6px 8px 0 0}
+.btn.alt{background:transparent;color:var(--ink);border:1px solid var(--ink)}
+.covers{display:flex;justify-content:center;padding:20px 0}
+.covers .cv{width:36%;flex:none;margin:0 -2%;box-shadow:0 18px 40px rgba(60,30,120,.28)}
+.covers .cv:nth-child(1){transform:rotate(-9deg) translateY(14px)}
+.covers .cv:nth-child(2){transform:translateY(-14px);z-index:2}
+.covers .cv:nth-child(3){transform:rotate(9deg) translateY(14px)}
+.stats{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px}
+.stats span{background:var(--soft);border-radius:999px;padding:6px 14px;font-size:13px}
+.warn{background:var(--soft);border-left:4px solid var(--acc);border-radius:12px;padding:12px 16px;font-size:14px;color:var(--mut);margin:8px 0 0}
+section{padding-top:64px}
+h2{font-size:clamp(28px,4vw,44px);line-height:1.1;margin-bottom:12px}
+.lead{max-width:62ch;color:var(--mut);font-size:17px;margin:0 0 26px}
+.pil{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px}
+.pc{background:var(--soft);border-radius:26px;padding:26px}
+.pc.d{background:var(--deep);color:#F3EEFF}.pc.d h3{color:#fff}.pc.d p{color:#D8CCF5}
+.pc h3{font-size:23px;margin-bottom:8px}.pc p{margin:0;color:var(--mut)}
+.ico{width:44px;height:44px;border-radius:14px;background:var(--acc);margin-bottom:14px;display:grid;place-items:center;color:var(--onacc);font:700 20px "Playfair Display",serif}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:720px){.two{grid-template-columns:1fr}}
+.pc ul{margin:10px 0 0;padding-left:18px;font-size:15px}
+.st{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px}
+.st div{border-top:2px solid var(--acc);padding-top:12px}
+.st i{font:700 34px "Playfair Display",serif;color:var(--acc);font-style:normal}
+.st p{margin:4px 0 0;font-size:15px;color:var(--mut)}
+.catnav{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 6px}
+.chip{border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:999px;padding:7px 16px;font:500 14px "DM Sans",sans-serif;cursor:pointer;text-decoration:none}
+.chip:hover{border-color:var(--acc)}
+.grp{font:700 13px "DM Sans";letter-spacing:.14em;text-transform:uppercase;color:var(--mut);margin:34px 0 -6px}
+.rh{display:flex;align-items:flex-end;justify-content:space-between;margin:30px 0 12px}
+.rh h3{font-size:28px}.rh small{color:var(--mut);font-size:14px;margin-left:10px;font-family:"DM Sans"}
+.ar button{width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:var(--bg);color:var(--ink);font-size:18px;cursor:pointer;margin-left:6px}
+.ar button:hover{background:var(--acc);color:var(--onacc)}
+.row{display:flex;gap:16px;overflow-x:auto;scroll-snap-type:x proximity;padding:4px 2px 14px;scrollbar-width:thin}
+.g{flex:none;width:232px;scroll-snap-align:start;text-align:left;border:0;background:transparent;padding:0;cursor:pointer;color:var(--ink);font:inherit}
+.cv{position:relative;aspect-ratio:4/5;border-radius:24px;overflow:hidden;background:var(--deep)}
+.cv svg{position:absolute;inset:0;width:100%;height:100%}
+.cv .t{position:absolute;left:0;right:0;bottom:0;padding:44px 16px 16px;background:linear-gradient(transparent,rgba(30,10,75,.85));color:#fff;font:700 21px/1.15 "Playfair Display",serif}
+.cv .x{position:absolute;top:12px;left:12px;background:rgba(255,255,255,.92);color:#3F2380;border-radius:999px;font:700 11px "DM Sans";padding:3px 10px}
+.g .tg{padding:8px 4px 0;font-size:12.5px;color:var(--mut)}
+@media(prefers-reduced-motion:no-preference){.g .cv{transition:transform .2s}.g:hover .cv{transform:translateY(-5px)}}
+footer{background:var(--deep);color:#E9E0FA;margin-top:70px;padding:34px 0;font-size:14px}
+dialog{border:0;border-radius:28px;background:var(--bg);color:var(--ink);max-width:540px;width:calc(100% - 24px);padding:0;overflow:hidden}
+dialog::backdrop{background:rgba(30,15,60,.55)}
+.db{padding:22px 26px 26px}
+dialog .cv{aspect-ratio:16/8;border-radius:0}
+dialog h3{font-size:30px;margin-bottom:6px}
+.dl{display:grid;grid-template-columns:110px 1fr;gap:5px 12px;font-size:14px;margin:14px 0}
+.dl dt{color:var(--mut)}.dl dd{margin:0}
+.f b{display:block;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--mut);margin:12px 0 8px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip[aria-pressed="true"]{background:var(--acc);border-color:var(--acc);color:var(--onacc)}
+.code{font:700 46px "Playfair Display",serif;letter-spacing:.12em;color:var(--acc)}
+</style>
+</head>
+<body>
+<nav><div class="wrap"><a class="brand" href="#"><span class="dot"></span>Nom provisoire</a><div class="l"><a href="#concept">Le concept</a><a href="#modes">Animation</a><a href="#jeux">Les jeux</a></div></div></nav>
+<div class="wrap">
+<header class="hero">
+  <div>
+    <div class="eb">Jeux de soirée clé en main</div>
+    <h1>Choisis ton <em>ambiance.</em> Réunis tes amis. Lance le jeu.</h1>
+    <p class="s">Des expériences de groupe avec un vrai déroulement, une identité visuelle et du rythme. Sur TV, sur mobile, avec ou sans animateur.</p>
+    <a class="btn" href="#jeux">Découvrir les jeux</a><a class="btn alt" href="#concept">Comprendre le concept</a>
+    <div class="stats"><span>TV + mobile</span><span>Animateur humain ou voix IA</span><span>Sans spoil</span></div>
+  </div>
+  <div class="covers" id="covers"></div>
+</header>
+<p class="warn"><strong>Prototype.</strong> Les visuels sont des illustrations provisoires, à remplacer par tes créations. Les 5 jeux sans badge sont les tiens (classement provisoire, infos à renseigner). Les jeux marqués « Exemple fictif » sont inventés pour se faire une idée du catalogue : leurs descriptions, durées et nombres de joueurs sont fictifs. Le lancement de partie est simulé.</p>
+
+<section id="concept">
+<div class="eb">Le concept</div>
+<h2>Une soirée réussie, sans préparation.</h2>
+<p class="lead">Tu choisis un jeu adapté à ton occasion, tu invites tes amis avec un code ou un QR code, et l’application déroule l’expérience : univers, règles, épreuves, indices, révélations. Chaque jeu a son propre univers, tout en appartenant à un même site cohérent.</p>
+<div class="pil">
+<div class="pc"><div class="ico">1</div><h3>Des jeux scénarisés</h3><p>Pas de simples quiz : des univers, des épreuves, des secrets et un dénouement, pensés par une créatrice de jeux qui anime elle-même des soirées.</p></div>
+<div class="pc"><div class="ico">2</div><h3>TV et téléphones</h3><p>L’écran commun montre l’ambiance, les consignes et les révélations. Chaque téléphone reçoit les informations privées : rôle, indices, votes.</p></div>
+<div class="pc d"><div class="ico" style="background:#fff;color:#2F1A66">3</div><h3>Rien à installer</h3><p>Les invités rejoignent la partie depuis leur navigateur. Tous les jeux n’exigent pas un téléphone par personne : cela dépend du jeu.</p></div>
+</div>
+</section>
+
+<section id="modes">
+<div class="eb">Deux façons d’animer</div>
+<h2>Tu animes, ou la voix s’en charge.</h2>
+<p class="lead">Le choix est indépendant du support (TV, mobile ou les deux).</p>
+<div class="two">
+<div class="pc"><h3>Animateur humain</h3><p>Une personne pilote la soirée avec une télécommande : consignes, révélations au bon moment, gestion du rythme.</p><ul><li>L’animateur de coulisses connaît tout et ne joue pas.</li><li>Le pilote-joueur commande la partie sans être spoilé.</li></ul></div>
+<div class="pc d"><h3>Voix IA</h3><p>Une voix off présente l’univers, explique les règles, annonce les épreuves et fait monter le suspense.</p><ul><li>Pause, répéter, « on est prêts » : le groupe garde la main.</li><li>Narration préparée à l’avance, sans improvisation.</li></ul></div>
+</div>
+</section>
+
+<section>
+<div class="eb">Le parcours</div>
+<h2>De l’envie de jouer à la révélation finale.</h2>
+<div class="st">
+<div><i>1</i><p>Découvre les jeux et filtre par occasion et ambiance.</p></div>
+<div><i>2</i><p>Lis la fiche : ce qu’on va vivre, sans secret dévoilé.</p></div>
+<div><i>3</i><p>Choisis le support et le mode d’animation.</p></div>
+<div><i>4</i><p>Crée la partie, invite avec un code ou un QR code.</p></div>
+<div><i>5</i><p>Joue : infos communes et privées distribuées au bon moment.</p></div>
+</div>
+</section>
+
+<section id="jeux">
+<div class="eb">Le catalogue</div>
+<h2>Fais défiler les catégories.</h2>
+<p class="lead">Un même jeu peut apparaître dans plusieurs catégories. Fais glisser chaque rangée sur le côté ou utilise les flèches.</p>
+<div class="catnav" id="catnav"></div>
+<div id="rows"></div>
+</section>
+</div>
+<footer><div class="wrap">Nom provisoire · prototype de démonstration</div></footer>
+<dialog id="dlg" aria-labelledby="dt"><div id="dc"></div></dialog>
+
+<script>
+var GL={
+manoir:'<circle cx="150" cy="55" r="22" fill-opacity=".5"/><path d="M40 150L100 95L160 150Z"/><rect x="55" y="150" width="90" height="55"/><rect x="90" y="170" width="20" height="35" fill="#3F2380"/><rect x="65" y="162" width="16" height="16" fill="#3F2380"/><rect x="119" y="162" width="16" height="16" fill="#3F2380"/>',
+crown:'<path d="M45 150L55 80L85 115L100 70L115 115L145 80L155 150Z"/><rect x="45" y="158" width="110" height="16" rx="4"/>',
+dice:'<rect x="35" y="95" width="75" height="75" rx="14" transform="rotate(-12 72 132)"/><rect x="100" y="80" width="70" height="70" rx="14" fill-opacity=".6" transform="rotate(14 135 115)"/><circle cx="62" cy="122" r="6" fill="#3F2380"/><circle cx="86" cy="148" r="6" fill="#3F2380"/>',
+lens:'<circle cx="90" cy="100" r="42" fill="none" stroke="#fff" stroke-width="14"/><path d="M122 132L165 178" stroke="#fff" stroke-width="18" stroke-linecap="round"/><circle cx="76" cy="88" r="9" fill-opacity=".5"/>',
+door:'<path d="M60 190V95a40 40 0 0 1 80 0V190Z"/><circle cx="125" cy="145" r="6" fill="#3F2380"/><path d="M90 190V110a10 10 0 0 1 20 0V190" fill="#3F2380" fill-opacity=".25"/>',
+ring:'<circle cx="100" cy="135" r="38" fill="none" stroke="#fff" stroke-width="12"/><path d="M82 82L100 58L118 82L100 100Z"/>',
+safe:'<rect x="45" y="70" width="110" height="115" rx="12"/><circle cx="100" cy="127" r="28" fill="none" stroke="#3F2380" stroke-width="8"/><path d="M100 127L112 112" stroke="#3F2380" stroke-width="6"/>',
+pump:'<ellipse cx="100" cy="135" rx="62" ry="52"/><rect x="94" y="72" width="12" height="20" rx="4"/><path d="M75 125L90 125L82 112ZM110 125L125 125L117 112ZM72 150Q100 175 128 150L118 148L100 160L82 148Z" fill="#3F2380"/>',
+q:'<text x="100" y="170" text-anchor="middle" font-size="150" font-family="Georgia,serif" font-weight="700">?</text>',
+flask:'<path d="M82 70H118V105L152 170Q158 188 140 188H60Q42 188 48 170L82 105Z"/><circle cx="92" cy="165" r="8" fill="#3F2380" fill-opacity=".35"/><circle cx="116" cy="150" r="6" fill="#3F2380" fill-opacity=".35"/>',
+bolt:'<path d="M115 55L55 135H95L80 195L150 105H108Z"/>',
+team:'<circle cx="60" cy="130" r="26"/><circle cx="140" cy="130" r="26"/><circle cx="100" cy="95" r="30" fill-opacity=".75"/><path d="M40 190q20-35 40 0ZM120 190q20-35 40 0ZM70 170q30-45 60 0Z"/>',
+mask:'<path d="M45 90Q100 60 155 90Q155 160 100 185Q45 160 45 90Z"/><ellipse cx="75" cy="115" rx="16" ry="9" fill="#3F2380"/><ellipse cx="125" cy="115" rx="16" ry="9" fill="#3F2380"/><path d="M80 152Q100 166 120 152" stroke="#3F2380" stroke-width="7" fill="none" stroke-linecap="round"/>'};
+var GR=[["#2F1A66","#8A63DC"],["#8E3FC4","#E8A4E0"],["#3B3FC4","#A9B6F7"],["#4B2A94","#B497F0"],["#5A2D9C","#D3A8F5"],["#B146B8","#F4B3DB"],["#262070","#7C7AF0"],["#6A2FA8","#E2A0F0"],["#3A2E9C","#C2B2FA"],["#7A3FD0","#C9A8F7"]];
+var uid=0;
+function art(g){var k=GR[g.g],i=++uid;return '<svg viewBox="0 0 200 250" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><defs><linearGradient id="a'+i+'" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="'+k[0]+'"/><stop offset="1" stop-color="'+k[1]+'"/></linearGradient></defs><rect width="200" height="250" fill="url(#a'+i+')"/><circle cx="30" cy="40" r="60" fill="#fff" fill-opacity=".08"/><circle cx="185" cy="215" r="70" fill="#fff" fill-opacity=".1"/><g fill="#fff" fill-opacity=".92" transform="translate(0,-18)">'+GL[g.k]+'</g></svg>'}
+var OCC=["Entre filles","Entre amis","EVJF / EVG","Soirée à thème","Éducatif"];
+var MEC=["Enquête et murder mystery","Déduction et rôles cachés","Questions, quiz et défis","Chacun pour soi","En équipes"];
+var R="Fiche à rédiger avec ton fichier.",X="Exemple fictif pour se faire une idée du catalogue.";
+var G=[
+{n:"La Soirée maudite",k:"manoir",g:0,o:["Entre amis","Soirée à thème"],m:["Enquête et murder mystery","Déduction et rôles cachés"],d:"Murder mystery : suspects, armes et lieux à identifier, épreuves pour obtenir des indices, secrets, puis accusation finale. Les téléphones servent d’outils d’enquête pour recevoir des informations privées.",s:"TV + mobile (un téléphone par joueur)"},
+{n:"Qui est la plus susceptible ?",k:"crown",g:1,o:["Entre filles","Entre amis"],m:["Questions, quiz et défis","Chacun pour soi"],d:R},
+{n:"Soirée de jeux entre copines",k:"dice",g:2,o:["Entre filles"],m:["Questions, quiz et défis","En équipes"],d:R},
+{n:"Mission Taupe",k:"lens",g:3,o:["Entre amis"],m:["Déduction et rôles cachés"],d:R},
+{n:"La chambre des disparus",k:"door",g:4,o:["Entre amis","Soirée à thème"],m:["Enquête et murder mystery"],d:R},
+{n:"Le Grand Défi de la Future Mariée",k:"ring",g:5,x:1,o:["EVJF / EVG","Entre filles"],m:["Questions, quiz et défis","En équipes"],d:X,du:"1 h 30",p:"6 à 12"},
+{n:"Le Casse du Siècle",k:"safe",g:6,x:1,o:["EVJF / EVG","Entre amis"],m:["En équipes","Enquête et murder mystery"],d:X,du:"1 h 45",p:"6 à 10"},
+{n:"La Nuit des Citrouilles",k:"pump",g:7,x:1,o:["Soirée à thème","Entre amis"],m:["Chacun pour soi","Questions, quiz et défis"],d:X,du:"1 h",p:"4 à 10"},
+{n:"Quiz Culture Express",k:"q",g:8,x:1,o:["Éducatif","Entre amis"],m:["Questions, quiz et défis","Chacun pour soi"],d:X,du:"45 min",p:"2 à 12"},
+{n:"Le Laboratoire du Savant Fou",k:"flask",g:3,x:1,o:["Éducatif"],m:["En équipes","Questions, quiz et défis"],d:X,du:"1 h",p:"4 à 12"},
+{n:"Duel de Cerveaux",k:"bolt",g:9,x:1,o:["Éducatif","Entre amis"],m:["Chacun pour soi"],d:X,du:"40 min",p:"2 à 6"},
+{n:"Équipes en Folie",k:"team",g:2,x:1,o:["Entre amis","Entre filles"],m:["En équipes"],d:X,du:"1 h 15",p:"6 à 14"},
+{n:"Qui ment ?",k:"mask",g:6,x:1,o:["Entre amis","Entre filles"],m:["Déduction et rôles cachés"],d:X,du:"50 min",p:"5 à 10"}
+];
+function $(i){return document.getElementById(i)}
+function id(s){return "c"+s.replace(/[^a-z]/gi,"").toLowerCase()}
+function card(g){var i=G.indexOf(g);return '<button class="g" data-i="'+i+'"><div class="cv">'+art(g)+(g.x?'<span class="x">Exemple fictif</span>':'')+'<div class="t">'+g.n+'</div></div><div class="tg">'+g.o.concat(g.m).slice(0,3).join(" · ")+'</div></button>'}
+function build(){
+ var h="",nav="";
+ [["Par occasion",OCC],["Par mécanique",MEC]].forEach(function(gp){
+  h+='<div class="grp">'+gp[0]+'</div>';
+  gp[1].forEach(function(c){var r=G.filter(function(g){return g.o.concat(g.m).indexOf(c)>-1});if(!r.length)return;
+   nav+='<a class="chip" href="#'+id(c)+'">'+c+'</a>';
+   h+='<div id="'+id(c)+'"><div class="rh"><h3>'+c+'<small>'+r.length+' jeu'+(r.length>1?'x':'')+'</small></h3><div class="ar"><button aria-label="Précédent">‹</button><button aria-label="Suivant">›</button></div></div><div class="row" tabindex="0" aria-label="'+c+'">'+r.map(card).join("")+'</div></div>'})});
+ $("rows").innerHTML=h;$("catnav").innerHTML=nav;
+ Array.prototype.forEach.call(document.querySelectorAll(".rh"),function(rh){var row=rh.nextElementSibling,b=rh.querySelectorAll("button");b[0].onclick=function(){row.scrollBy({left:-row.clientWidth*.8,behavior:"smooth"})};b[1].onclick=function(){row.scrollBy({left:row.clientWidth*.8,behavior:"smooth"})}});
+ Array.prototype.forEach.call(document.querySelectorAll(".g"),function(b){b.onclick=function(){sheet(+b.dataset.i)}});
+ $("covers").innerHTML=[0,1,2].map(function(i){return '<div class="cv">'+art(G[i])+'<div class="t">'+G[i].n+'</div></div>'}).join("");
+}
+function sheet(i){var g=G[i];
+ $("dc").innerHTML='<div class="cv">'+art(g)+'</div><div class="db"><h3 id="dt">'+g.n+'</h3><p style="margin:0;color:var(--mut)">'+g.d+'</p><dl class="dl"><dt>Durée</dt><dd>'+(g.du||"À renseigner")+'</dd><dt>Joueurs</dt><dd>'+(g.p||"À renseigner")+'</dd><dt>Âge</dt><dd>À renseigner</dd><dt>Matériel</dt><dd>À renseigner</dd><dt>Support</dt><dd>'+(g.s||"À confirmer")+'</dd></dl><p style="font-size:13px;color:var(--mut)">Cette fiche ne révèle aucun secret du jeu.</p><button class="btn" id="go">Lancer une partie</button><button class="btn alt" id="x">Fermer</button></div>';
+ $("x").onclick=function(){$("dlg").close()};$("go").onclick=function(){launch(g)};$("dlg").showModal()}
+var sup="Combiné",ani="Animateur humain";
+function launch(g){
+ function seg(id,o,c){return '<div class="chips" id="'+id+'">'+o.map(function(x){return '<button class="chip" aria-pressed="'+(x==c)+'">'+x+'</button>'}).join("")+'</div>'}
+ $("dc").innerHTML='<div class="db"><h3 id="dt">'+g.n+'</h3><div class="f"><b>Support</b>'+seg("s1",["TV","Mobile","Combiné"],sup)+'<b>Animation</b>'+seg("s2",["Animateur humain","Voix IA"],ani)+'</div><button class="btn" id="mk">Créer la partie</button><button class="btn alt" id="x">Fermer</button></div>';
+ [["s1",function(v){sup=v}],["s2",function(v){ani=v}]].forEach(function(p){Array.prototype.forEach.call($(p[0]).children,function(b){b.onclick=function(){p[1](b.textContent);Array.prototype.forEach.call($(p[0]).children,function(c){c.setAttribute("aria-pressed",c==b)})}})});
+ $("x").onclick=function(){$("dlg").close()};
+ $("mk").onclick=function(){var c=Math.random().toString(36).slice(2,6).toUpperCase();$("dc").innerHTML='<div class="db"><h3 id="dt">Partie créée (simulation)</h3><p>Les joueurs rejoindront avec ce code :</p><div class="code">'+c+'</div><p style="color:var(--mut);font-size:14px">'+sup+' · '+ani+'. Dans la vraie version : QR code et synchronisation des téléphones.</p><button class="btn alt" id="x">Fermer</button></div>';$("x").onclick=function(){$("dlg").close()}}}
+build();
+</script>
+</body>
+</html>
