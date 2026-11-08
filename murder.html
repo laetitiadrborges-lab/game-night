@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Murder mystery – salon de jeu (test)</title>
+<style>
+:root{--bg:#FFFFFF;--soft:#F4EFFC;--ink:#2B1B4A;--mut:#6E6486;--line:#E6DDF5;--acc:#6A3FC4;--onacc:#fff;--red:#B3243B;box-sizing:border-box;padding:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root{--bg:#150F26;--soft:#211838;--ink:#F3EEFF;--mut:#B8AED6;--line:#352A57;--acc:#9B7BF0;--onacc:#150F26;--red:#FF7A90}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:1000px;margin:0 auto;padding:20px 16px}
+h1,h2,h3{font-family:Georgia,"Times New Roman",serif;margin:0 0 8px;line-height:1.1}
+h1{font-size:clamp(32px,6vw,56px);color:var(--acc)}h2{font-size:clamp(24px,4vw,38px)}h3{font-size:20px}
+.eb{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--acc);font-weight:700;margin-bottom:6px}
+.note{background:var(--soft);border-left:4px solid var(--acc);border-radius:10px;padding:10px 14px;font-size:14px;color:var(--mut);margin:14px 0}
+button,select,textarea,input{font:inherit}
+button{cursor:pointer}button:focus-visible,select:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+.btn{border:0;background:var(--acc);color:var(--onacc);border-radius:999px;padding:11px 22px;font-weight:600;margin:6px 8px 0 0}
+.btn.alt{background:transparent;color:var(--ink);border:1px solid var(--ink)}.btn.sm{padding:6px 14px;font-size:14px;margin:4px 6px 0 0}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.big{font:700 clamp(54px,12vw,100px) Georgia,serif;letter-spacing:.14em;color:var(--acc);line-height:1}
+.grid{display:grid;grid-template-columns:1fr auto;gap:24px;align-items:center}
+@media(max-width:700px){.grid{grid-template-columns:1fr}}
+.qr img{width:190px;height:190px;image-rendering:pixelated;background:#fff;padding:10px;border-radius:14px;border:1px solid var(--line)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}.chip{background:var(--soft);border-radius:999px;padding:5px 14px;font-weight:600}
+.card{background:var(--soft);border-radius:18px;padding:16px;margin:12px 0}
+.kill{color:var(--red);font-weight:700}
+.row{border:1px solid var(--line);border-radius:14px;padding:12px;margin:10px 0}
+select,input,textarea{width:100%;padding:12px;border:2px solid var(--line);border-radius:12px;background:var(--bg);color:var(--ink);margin:6px 0}
+ul{padding-left:20px;margin:6px 0}
+details summary{cursor:pointer;padding:2px 0}
+.sl{width:100%;display:block;border-radius:14px}.cd{position:fixed;right:24px;bottom:24px;background:rgba(20,10,40,.88);color:#fff;font:700 clamp(36px,6vw,80px) Georgia,serif;padding:8px 24px;border-radius:18px}
+.tvfull main{max-width:1500px;padding:10px}
+</style>
+</head>
+<body>
+<main id="app"></main>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+<script>
+/* ===== RÉGLAGE ===== Adresse de ta base Firebase pour jouer avec de vrais téléphones.
+   Vide = mode démo (onglets du même navigateur). */
+var CFG={firebaseUrl:""};
+
+/* ===== CONTENU ===== Diaporama, suspects, armes et lieux : tes vrais contenus. Secrets, solution, indices : encore de test (en attente de ton document d’animation). */
+var SC={"title": "La Soirée maudite · Manoir de Valombre", "arm": ["Le poignard", "Le chandelier", "La corde", "La statuette", "Le trophée en métal", "Le marteau", "Le coupe-papier"], "lieu": ["La bibliothèque", "La cuisine", "La serre", "Le bureau", "La cave", "Le salon", "La salle à manger"], "sol": {"w": 1, "p": 3}, "def": ["Fais asseoir un autre joueur par terre pendant au moins cinq secondes.", "Sers un verre de jus à quelqu’un sans proposer et sans qu’il te le demande. Il doit accepter le verre.", "Fais porter un de tes accessoires à un autre joueur pendant deux minutes.", "Fais changer deux joueurs de place.", "Fais fermer les yeux à deux joueurs en même temps pendant trois secondes.", "Déclenche un toast auquel participent tous les joueurs.", "Fais chanter au moins une phrase à un autre joueur.", "Fais applaudir au moins trois autres joueurs en même temps.", "Fais imiter ta voix ou ta façon de parler à quelqu’un.", "Fais raconter un cauchemar à un autre joueur.", "Fais raconter une anecdote où quelqu’un a eu peur.", "Fais regarder derrière lui à un joueur, deux fois en moins de cinq minutes.", "Fais vérifier sous un meuble à un autre joueur.", "Fais tenir un objet comme « protection contre les esprits » à quelqu’un pendant deux minutes.", "Fais dessiner un fantôme dans son carnet à un autre joueur.", "Fais prendre une photo de groupe avec tous les joueurs.", "Fais prendre une pose de monstre à deux joueurs en même temps.", "Fais inventer et réciter une formule magique à quelqu’un.", "Fais répondre à une question en chuchotant à trois joueurs différents.", "Fais parler un autre joueur avec un accent pendant trois phrases.", "Fais accepter un nouveau surnom à quelqu’un : deux autres joueurs doivent l’utiliser.", "Fais demander à un joueur de lancer un duel contre quelqu’un d’autre.", "Fais défendre ton innocence par un autre joueur devant le groupe, sans lui demander directement de te défendre.", "Fais proposer spontanément un échange d’informations à un autre joueur.", "Fais accuser le même suspect par deux joueurs différents au cours des discussions. Une accusation orale suffit.", "Fais dire « je te fais confiance » à quelqu’un, sans lui demander de répéter cette phrase.", "Fais dire « je suis possédé » à un autre joueur, sans lui demander de répéter cette phrase.", "Fais accepter une poignée de main pour conclure une alliance avec toi.", "Fais convaincre un troisième joueur par quelqu’un d’autre de changer de place.", "Fais échanger leur verre à deux joueurs, sans qu’ils aient besoin de boire.", "Fais proposer par quelqu’un de baisser la lumière ou de l’éteindre.", "Fais demander l’heure à un autre joueur.", "Fais compter à voix haute les personnes présentes par quelqu’un.", "Fais dire « Gabriel » à trois joueurs différents en moins d’une minute.", "Fais tenir un discours de dix secondes à quelqu’un en hommage à Gabriel.", "Fais présenter des excuses à un joueur pour une accusation qu’il a portée contre toi.", "Fais affirmer à quelqu’un que tu ferais un bon détective.", "Fais comparer leurs notes à deux autres joueurs, sans leur demander de te les montrer.", "Fais inventer un nom d’équipe à quelqu’un, alors que le jeu est individuel.", "Fais raconter à un joueur comment il survivrait à une attaque de zombies. Il doit citer trois actions.", "Fais avouer à quelqu’un quelle personne du groupe il sacrifierait dans un film d’horreur.", "Fais donner un nom à un objet de décoration par un autre joueur.", "Fais saluer un objet de décoration à quelqu’un.", "Fais poser une question à voix haute à un esprit imaginaire par un joueur.", "Fais frapper trois fois sur une table à quelqu’un.", "Fais prononcer une phrase à l’envers, mot par mot, à un autre joueur.", "Fais réciter les jours de la semaine à l’envers à quelqu’un.", "Fais répondre uniquement par gestes à un joueur pendant trente secondes.", "Fais prendre une voix de robot à quelqu’un pendant trois phrases.", "Fais demander un conseil d’enquête à un joueur auprès d’un troisième.", "Fais convaincre un joueur par un autre de ta propre innocence.", "Fais donner deux surnoms différents à Gabriel par deux joueurs.", "Fais promettre à quelqu’un de ne pas te provoquer en duel pendant dix minutes.", "Fais lancer un compte à rebours de dix à zéro par au moins trois autres joueurs ensemble."], "duel": [["Combien de pattes possède une araignée ?", "8"], ["Quel animal Dracula peut-il devenir ?", "Une chauve-souris"], ["Quel objet permet à une sorcière de voler ?", "Un balai"], ["Quel légume sculpte-t-on traditionnellement pour Halloween ?", "Une citrouille"], ["Quel monstre se transforme à la pleine lune ?", "Un loup-garou"], ["Dans quel pays se trouve la Transylvanie ?", "La Roumanie"], ["Comment appelle-t-on la peur des araignées ?", "L’arachnophobie"], ["Quel objet un vampire est-il censé ne pas refléter ?", "Un miroir"], ["Quel aliment est réputé repousser les vampires ?", "L’ail"], ["Quel métal est traditionnellement utilisé contre les loups-garous ?", "L’argent"], ["Quel personnage est enveloppé de bandelettes ?", "Une momie"], ["Quel récipient utilise une sorcière pour préparer ses potions ?", "Un chaudron"], ["Quel oiseau noir est souvent associé aux mauvais présages ?", "Le corbeau"], ["Quelle créature revient d’entre les morts pour dévorer les vivants ?", "Un zombie"], ["Quelle fête célèbre-t-on le lendemain d’Halloween en France ?", "La Toussaint"], ["Quel jour du mois d’octobre fête-t-on Halloween ?", "Le 31"], ["Dans Ça, quelle forme prend principalement le monstre ?", "Un clown"], ["De quelle couleur est le ballon emblématique de Ça ?", "Rouge"], ["Quel tueur porte un masque de hockey ?", "Jason Voorhees"], ["Quel tueur apparaît dans les rêves de ses victimes ?", "Freddy Krueger"], ["Quel tueur possède un gant muni de lames ?", "Freddy Krueger"], ["Quel nom porte le tueur masqué de Scream ?", "Ghostface"], ["Quel objet sonne souvent avant une attaque dans Scream ?", "Un téléphone"], ["Comment s’appelle la célèbre poupée rousse tueuse ?", "Chucky"], ["Quelle poupée se trouve dans une vitrine dans l’univers de Conjuring ?", "Annabelle"], ["Dans Saw, quel véhicule utilise la marionnette Billy ?", "Un tricycle"], ["Quelle famille compte Mercredi parmi ses membres ?", "La famille Addams"], ["Comment s’appelle le frère de Mercredi Addams ?", "Pugsley"], ["Quelle partie du corps est « La Chose » dans La Famille Addams ?", "Une main"], ["Quel métier exerce le créateur de la créature de Frankenstein ?", "Scientifique / médecin"], ["Combien font 13 + 17 ?", "30"], ["Combien font 8 × 7 ?", "56"], ["Quelle est la moitié de 150 ?", "75"], ["Combien de minutes y a-t-il dans deux heures et demie ?", "150"], ["Combien de côtés possède un hexagone ?", "6"], ["Combien de mois comptent au moins 28 jours ?", "12"], ["Tu dépasses la personne en deuxième position. Quelle place occupes-tu ?", "Deuxième"], ["Combien d’animaux Moïse a-t-il embarqués dans son arche ?", "Aucun : c’était Noé"], ["Quel est le prochain nombre : 3, 6, 12, 24… ?", "48"], ["Combien font 100 − 37 ?", "63"], ["Quelle lettre vient après le Q dans l’alphabet ?", "R"], ["Quel est le troisième jour de la semaine, en commençant par lundi ?", "Mercredi"], ["Quel mois vient juste avant novembre ?", "Octobre"], ["Combien de voyelles différentes y a-t-il dans « Halloween » ?", "3 : A, O, E"], ["Combien de lettres contient le mot « fantôme » ?", "7"], ["Quel nombre s’écrit avec les mêmes chiffres que 13, mais inversés ?", "31"], ["Si cinq bougies sont allumées et que tu en éteins deux, combien restent allumées ?", "3"], ["Un cercueil possède six poignées, trois de chaque côté. Combien de poignées sur deux cercueils ?", "12"], ["Quelle couleur obtient-on en mélangeant de la peinture rouge et jaune ?", "Orange"], ["Quel est le contraire de « coupable » ?", "Innocent"]], "clues": {"lieu": [{"t": "« J’ai déplacé le dossier dans la pièce où mon père signait ses contrats. Viens me retrouver pendant que les autres sont occupés. » Le destinataire est masqué.", "h": "Un message de Gabriel"}, {"t": "« Mon père recevait ses visiteurs à la bibliothèque. Mais pour signer un document, il exigeait toujours de s’installer devant le portrait de son épouse. »", "h": "Un extrait des souvenirs de famille"}, {"t": "Elle montre le portrait de l’épouse au-dessus du secrétaire dans le bureau. Les autres pièces apparaissent aussi sur une planche de photos.", "h": "Une photographie ancienne du manoir"}, {"t": "« L’encre y engage davantage que la parole. »", "e": "Les signatures des contrats."}, {"t": "« On y pose son nom au bas de ses décisions. »", "e": "Les documents signés."}, {"t": "« Des tiroirs gardent ce que les conversations révèlent. »", "e": "Les papiers et secrets rangés dans le bureau."}, {"t": "« Elle veille sur les affaires de famille sans jamais parler. »", "e": "La femme représentée sur le portrait."}, {"t": "« Un visage au mur. Des signatures en dessous. »", "e": "Le portrait au-dessus du meuble de travail."}, {"t": "🖋 📄 🖼", "e": "L’écriture, les documents et le portrait."}], "arme": [{"t": "« Gabriel a reçu un coup violent avec un objet lourd. Aucune blessure de lame ni trace de strangulation n’a été relevée. »", "h": "Un extrait du rapport d’examen"}, {"t": "« J’ai entendu un choc sourd, puis plusieurs petits objets tomber sur le parquet. Je n’ai pas osé m’approcher. »", "h": "Un témoignage pendant la panne"}, {"t": "« Trois bougies ivoire ont été retrouvées sous un meuble. L’une était cassée en deux. »", "h": "Une découverte du personnel"}, {"t": "On distingue le chandelier portant trois bougies ivoire, une statuette en bronze et un trophée en métal.", "h": "Une photographie avant la panne"}, {"t": "« Le chandelier a été retrouvé sans ses bougies. Quelqu’un les avait retirées… ou elles étaient tombées. »", "h": "Une observation après le meurtre"}, {"t": "« 3 »", "e": "Les trois bougies."}, {"t": "« Je peux avoir des bras sans pouvoir enlacer personne. »", "e": "Les branches du chandelier."}, {"t": "« Mes larmes durcissent en refroidissant. »", "e": "La cire."}, {"t": "« Je raccourcis en travaillant. »", "e": "Les bougies qui se consument."}, {"t": "« Un souffle suffit à faire taire ce que je porte. »", "e": "Les flammes."}, {"t": "🕯 🕯 🕯", "e": "Une version plus facile, à garder pour la fin."}], "pers": [{"t": "« Tu as signé ces documents. Tu savais forcément ce que tu faisais. On en parlera ce soir. »", "h": "Un message de Gabriel à un destinataire masqué"}, {"t": "« Tu m’as demandé de signer à ta place pendant des mois. Maintenant, tu voudrais que je porte tout le chapeau ? »", "h": "Un brouillon jamais envoyé"}, {"t": "« La personne qui risque de me poser problème connaît aussi bien mon emploi du temps que moi. »", "h": "Une confidence de Gabriel"}, {"t": "Le document porte la mention : « Autorisations de paiement — exemplaire destiné à l’assistante personnelle ». La signature a été déchirée.", "h": "Une page arrachée à un dossier"}, {"t": "« {N} a demandé à Gabriel s’ils pouvaient parler seuls. Il lui a répondu : “Après mon annonce.” »", "h": "Un témoignage avant la panne"}, {"t": "{N} affirme avoir cherché son téléphone pendant la panne. Pourtant, une vidéo la montre en train de l’utiliser au moment où les lumières s’éteignent.", "h": "Un détail dans son alibi"}, {"t": "« J’ai entendu une voix dire : “Rends-moi les originaux.” Je n’ai pas reconnu la personne. »", "h": "Un témoignage pendant la panne"}, {"t": "« Gabriel disait à quelqu’un : “Sans moi, tu n’aurais même pas ce poste.” Je n’ai pas entendu la réponse. »", "h": "Une conversation surprise"}, {"t": "{N} affirme ne pas avoir revu Gabriel pendant la panne, mais mentionne sa manche déchirée — un détail qui n’avait pas encore été révélé aux invités.", "h": "Un détail qu’elle ne devrait pas connaître"}, {"t": "« Avant que l’enquête commence, {N} a demandé si les papiers retrouvés auprès de Gabriel seraient examinés eux aussi. »", "h": "Une demande suspecte"}]}, "aide": ["Lieu : le meurtre n’a pas eu lieu dans la cuisine.", "Lieu : le meurtre n’a pas eu lieu dans le grenier.", "Lieu : la pièce contient un fauteuil.", "Lieu : la pièce a 2 points lumineux.", "Lieu : la pièce contient une échelle.", "Arme : elle n’était pas tranchante.", "Arme : ce n’était pas du poison.", "Arme : un objet qu’on trouve normalement dans une maison.", "Arme : l’objet pouvait tenir dans une seule main.", "Arme : elle pouvait servir à éclairer une pièce.", "Arme : des traces de cire ont été retrouvées près du corps."], "films": ["L’Exorciste", "Conjuring", "Mama", "Saw", "Sinister", "Annabelle", "Insidious", "Ça (It)"], "mem": [["Combien de personnes figurent sur le portrait ?", "Trois."], ["Quel animal est posé à la fenêtre ?", "Un corbeau."], ["Quelle trace apparaît sur la vitre ?", "Une empreinte de main."], ["Quel objet est posé sur la chaise ?", "Un chapeau de sorcière."], ["Qu’est-ce qui dépasse de sous le lit ?", "Une main."], ["De quelle couleur est le nœud dans les cheveux de la poupée ?", "Rouge."], ["Quel objet pend à la poignée de l’armoire ?", "Une clé."], ["Que voit-on dans l’entrebâillement de l’armoire ?", "Un visage et une main."], ["Quel jouet est renversé sur le tapis ?", "Un cheval à bascule."], ["Combien de grands papillons sont sur le mur près de l’horloge ?", "Trois."], ["Où se trouve la grosse araignée ?", "En haut à droite, près de l’armoire."]]};
+var SLIDES=[{l:"Titre"},{l:"Invitation troublante"},{l:"La panne de courant"},{l:"Les suspects"},{l:"Les armes possibles"},{l:"Les lieux possibles"},{l:"Les règles du jeu"},{l:"Le Code du Grimoire",t:240},{l:"Les Bougies du Rituel",t:180},{l:"Les Films du Cauchemar : consignes"}];
+for(var fi=1;fi<=8;fi++)SLIDES.push({l:"Film "+fi+" / 8",t:20});
+SLIDES.push({l:"La Chambre des Disparus : consignes"},{l:"La Chambre des Disparus : observation",t:60});
+
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+function $(i){return document.getElementById(i)}
+function dig(o,a){for(var i=0;i<a.length;i++){if(o==null)return null;o=o[a[i]]}return o==null?null:o}
+function put(o,a,v){for(var i=0;i<a.length-1;i++){if(o[a[i]]==null||typeof o[a[i]]!=="object")o[a[i]]={};o=o[a[i]]}o[a[a.length-1]]=v}
+function sh(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1)),t=a[i];a[i]=a[j];a[j]=t}return a}
+function rnd(n){return Math.floor(Math.random()*n)}
+
+var T;
+if(CFG.firebaseUrl){var base=CFG.firebaseUrl.replace(/\/$/,"");T={demo:false,
+ set:function(p,v){return fetch(base+"/"+p+".json",{method:"PUT",body:JSON.stringify(v)})},
+ get:function(p){return fetch(base+"/"+p+".json").then(function(r){return r.json()})}}}
+else{T={demo:true,
+ set:function(p,v){var d={};try{d=JSON.parse(localStorage.getItem("mm")||"{}")}catch(e){}put(d,p.split("/"),v);localStorage.setItem("mm",JSON.stringify(d));return Promise.resolve()},
+ get:function(p){var d={};try{d=JSON.parse(localStorage.getItem("mm")||"{}")}catch(e){}return Promise.resolve(dig(d,p.split("/")))}}}
+
+var pid=sessionStorage.getItem("pid");if(!pid){pid=Math.random().toString(36).slice(2,8);sessionStorage.setItem("pid",pid)}
+var tvCode=(new URLSearchParams(location.search).get("tv")||"").toUpperCase();
+var hostCode=sessionStorage.getItem("host");
+var hash=location.hash.slice(1).toUpperCase();
+var mode=tvCode?"tv":(hash&&hash!==hostCode?"player":(hostCode?"host":"home"));
+var code=tvCode||(mode==="player"?hash:hostCode);
+var last=null,S=null,P=null,HS=null;
+function room(){return "rooms/"+code}
+function saveHS(){sessionStorage.setItem("hs"+code,JSON.stringify(HS))}
+if(mode==="host"){try{HS=JSON.parse(sessionStorage.getItem("hs"+code))}catch(e){}}
+
+function tick(){
+ if(!code)return;
+ var reqs=[T.get(room())];if(mode==="player")reqs.push(T.get("priv/"+code+"/"+pid));
+ Promise.all(reqs).then(function(r){
+  var k=JSON.stringify(r);if(k===last)return;
+  var a=document.activeElement;if(a&&/INPUT|SELECT|TEXTAREA/.test(a.tagName))return;
+  last=k;S=r[0];P=r[1]||null;view()
+ }).catch(function(){$("app").innerHTML='<h2>Connexion impossible</h2><p>Vérifie la connexion ou le réglage de la base.</p>'})
+}
+setInterval(tick,1000);
+
+function demoNote(){return T.demo?'<p class="note"><strong>Mode démo.</strong> Les joueurs ouvrent la page dans d’autres onglets du même navigateur. Pour de vrais téléphones, renseigne la base Firebase en haut du fichier.</p>':''}
+function plIds(){return Object.keys(dig(S,["players"])||{})}
+function pn(id){return esc(dig(S,["players",id,"n"])||"?")}
+function qrHtml(){var u=location.origin+location.pathname+"#"+code;try{var q=qrcode(0,"M");q.addData(u);q.make();return '<div class="qr">'+q.createImgTag(5,0)+'</div>'}catch(e){return ''}}
+
+function home(){
+ $("app").innerHTML='<div class="eb">Murder mystery · test</div><h1>La Soirée maudite</h1><p>Distribue des rôles secrets sur les téléphones, donne des indices et des défis, puis recueille les accusations finales. Diapos, armes, lieux, indices, défis et questions de duel sont les tiens. Chaque joueur entre son propre prénom et devient suspect. Les secrets des personnages restent à renseigner.</p><button class="btn" id="mk">Créer une partie</button>'+demoNote();
+ $("mk").onclick=function(){var A="ABCDEFGHJKMNPQRSTUVWXYZ",c="";for(var i=0;i<4;i++)c+=A[rnd(A.length)];
+  T.set("rooms/"+c,{ctl:{phase:"lobby"}}).then(function(){sessionStorage.setItem("host",c);hostCode=c;code=c;mode="host";last=null;tick()})}
+}
+
+/* ---------- animatrice ---------- */
+function pname(id){return dig(S,["players",id,"n"])||"?"}
+function pub(p){HS.ctl=Object.assign({slide:0},HS.ctl||{},p);saveHS();return T.set(room()+"/ctl",HS.ctl).then(function(){last=null;tick()})}
+function launch(){
+ var ids=plIds(),kp=ids[rnd(ids.length)];
+ HS={sol:{k:kp,w:SC.sol.w,p:SC.sol.p},kp:kp,next:{lieu:0,arme:0,pers:0},cn:{},pts:{},last:null,dq:null,dused:[]};saveHS();
+ var w=ids.map(function(id){return T.set("priv/"+code+"/"+id,{killer:id===kp,def:SC.def[rnd(SC.def.length)]})});
+ w.push(T.set(room()+"/info",{sus:ids.map(function(id){return {i:id,n:pname(id)}}),arm:SC.arm,lieu:SC.lieu}));
+ Promise.all(w).then(function(){return pub({phase:"play",slide:0})})
+}
+function giveClue(id,cat){
+ var L=SC.clues[cat],i=HS.next[cat];
+ if(i>=L.length){HS.last={t:"Plus d’indice disponible dans cette catégorie.",e:""};saveHS();return Promise.resolve()}
+ var c=L[i],txt=(c.h?c.h+" : ":"")+c.t.replace(/\{N\}/g,pname(HS.kp)),k=HS.cn[id]||0;
+ HS.next[cat]=i+1;HS.cn[id]=k+1;HS.last={who:pname(id),t:txt,e:c.e||""};saveHS();
+ return T.set("priv/"+code+"/"+id+"/clues/c"+k,{c:cat,t:txt})
+}
+function newDef(id){return T.set("priv/"+code+"/"+id+"/def",SC.def[rnd(SC.def.length)])}
+function reveal(){
+ T.get("sub/"+code).then(function(sub){sub=sub||{};
+  var win=plIds().filter(function(id){var s=sub[id];return id!==HS.kp&&s&&s.k===HS.sol.k&&s.w===HS.sol.w&&s.p===HS.sol.p}),tie=false;
+  if(win.length>1){var m=Math.max.apply(null,win.map(function(id){return HS.pts[id]||0}));win=win.filter(function(id){return (HS.pts[id]||0)===m});tie=win.length>1}
+  return T.set(room()+"/result",{k:pname(HS.kp),w:SC.arm[HS.sol.w],p:SC.lieu[HS.sol.p],kp:HS.kp,win:win,tie:tie}).then(function(){return pub({phase:"end"})})
+ })
+}
+function hostView(){
+ var ph=dig(S,["ctl","phase"])||"lobby",h="",ids=plIds(),tvUrl=location.pathname+"?tv="+code;
+ if(ph==="lobby"){
+  h='<div class="grid"><div><div class="eb">Console animatrice</div><h1>Salon '+code+'</h1><p>Chaque joueur scanne le QR code ou tape le code, puis <strong>entre son propre prénom : il devient son nom de suspect</strong>. Ouvre l’<strong>écran TV</strong> dans un autre onglet et projette-le : il ne montre aucun secret.</p><div class="big">'+code+'</div><a class="btn alt" href="'+tvUrl+'" target="_blank" rel="noopener">Ouvrir l’écran TV</a></div>'+qrHtml()+'</div><h3 style="margin-top:18px">Suspects ('+ids.length+')</h3><div class="chips">'+(ids.length?ids.map(function(i){return '<span class="chip">'+pn(i)+'</span>'}).join(""):'<span style="color:var(--mut)">En attente…</span>')+'</div><button class="btn" id="go"'+(ids.length>=2&&ids.length<=8?'':' disabled')+'>Distribuer les rôles et lancer</button><p style="color:var(--mut);font-size:14px">De 2 à 8 joueurs.</p>'+demoNote();
+ }else if(!HS){h='<h2>Console indisponible</h2><p>Cette partie a été lancée depuis un autre onglet : rouvre la console dans l’onglet où tu as créé la partie.</p>'}
+ else{
+  h='<div class="eb">Console animatrice · '+code+'</div><h2>'+esc(SC.title)+'</h2><div class="card"><strong>Solution (secrète)</strong> : <span class="kill">'+esc(pname(HS.kp))+'</span>, '+esc(SC.arm[HS.sol.w])+', '+esc(SC.lieu[HS.sol.p])+'</div>';
+  if(ph==="play"){
+   var cs=(HS.ctl&&HS.ctl.slide)||0,sl=SLIDES[cs],L=HS.last;
+   h+='<div class="card"><h3>Diaporama TV : '+(cs+1)+' / '+SLIDES.length+' · '+esc(sl.l)+'</h3><button class="btn sm alt" id="sp">Précédent</button><button class="btn sm" id="sn">Suivant</button>'+(sl.t?'<button class="btn sm alt" id="ct">Lancer le chrono ('+sl.t+' s)</button>':'')+'</div>';
+   if(L)h+='<div class="card"><strong>Dernier indice envoyé'+(L.who?' à '+esc(L.who):'')+'</strong><br>'+esc(L.t)+(L.e?'<br><span style="color:var(--mut)">Explication : '+esc(L.e)+'</span>':'')+'</div>';
+   h+=ids.map(function(id){return '<div class="row"><strong>'+pn(id)+'</strong>'+(id===HS.kp?' <span class="kill">(meurtrière)</span>':'')+' · '+(HS.pts[id]||0)+' pt<br>Indice : <button class="btn sm" data-a="cl" data-c="lieu" data-id="'+id+'">Lieu</button><button class="btn sm" data-a="cl" data-c="arme" data-id="'+id+'">Arme</button><button class="btn sm" data-a="cl" data-c="pers" data-id="'+id+'">Personne</button><button class="btn sm alt" data-a="def" data-id="'+id+'">Nouveau défi</button><button class="btn sm alt" data-a="pt" data-id="'+id+'">+1 pt</button></div>'}).join("");
+   h+='<div class="card"><strong>Duel</strong> : première bonne réponse = 1 point, premier à 3 gagne.<br><button class="btn sm" id="dq">Tirer une question</button>'+(HS.dq?'<p><strong>'+esc(HS.dq[0])+'</strong><br>Réponse : '+esc(HS.dq[1])+'</p>':'')+'</div>';
+   h+='<details class="card"><summary><strong>Réponses des épreuves</strong></summary><p>Code du Grimoire : <strong>0 · 4 · 2</strong><br>Bougies (gauche → droite) : <strong>blanche, rouge, noire, violette, verte</strong><br>Films : '+SC.films.map(function(f,i){return (i+1)+". "+esc(f)}).join(" · ")+'</p><strong>Chambre des Disparus</strong><ul>'+SC.mem.map(function(m){return '<li>'+esc(m[0])+' → <strong>'+esc(m[1])+'</strong></li>'}).join("")+'</ul></details><details class="card"><summary><strong>Indices d’aide (si le groupe est bloqué)</strong></summary><ul>'+SC.aide.map(function(a){return '<li>'+esc(a)+'</li>'}).join("")+'</ul></details><button class="btn" id="acc">Passer à l’accusation finale</button>';
+  }else if(ph==="accuse"){
+   var d=Object.keys(dig(S,["done"])||{}).length;
+   h+='<p>Accusations reçues : <strong>'+d+' / '+ids.length+'</strong></p><button class="btn" id="rv">Révéler la solution</button>';
+  }else{h+=resultHtml()}
+ }
+ $("app").innerHTML=h;
+ if($("go"))$("go").onclick=launch;
+ if($("acc"))$("acc").onclick=function(){pub({phase:"accuse"})};
+ if($("rv"))$("rv").onclick=reveal;
+ var cs2=(HS&&HS.ctl&&HS.ctl.slide)||0;
+ if($("sp"))$("sp").onclick=function(){pub({slide:Math.max(0,cs2-1),t0:null,dur:null})};
+ if($("sn"))$("sn").onclick=function(){pub({slide:Math.min(SLIDES.length-1,cs2+1),t0:null,dur:null})};
+ if($("ct"))$("ct").onclick=function(){pub({t0:Date.now(),dur:SLIDES[cs2].t})};
+ if($("dq"))$("dq").onclick=function(){var all=SC.duel.map(function(x,i){return i}),left=all.filter(function(i){return HS.dused.indexOf(i)<0});if(!left.length){HS.dused=[];left=all}var i=left[rnd(left.length)];HS.dused.push(i);HS.dq=SC.duel[i];saveHS();hostView()};
+ Array.prototype.forEach.call(document.querySelectorAll("[data-a]"),function(b){b.onclick=function(){var id=b.dataset.id,a=b.dataset.a;
+  if(a==="pt"){HS.pts[id]=(HS.pts[id]||0)+1;saveHS();hostView();return}
+  (a==="cl"?giveClue(id,b.dataset.c):newDef(id)).then(function(){if(a==="cl")hostView();else b.textContent="Envoyé ✓"})}})
+}
+function resultHtml(){
+ var r=dig(S,["result"]);if(!r)return "";
+ var w=(r.win||[]).map(pn);
+ return '<h2>La solution</h2><div class="card"><p><strong>Coupable :</strong> '+esc(r.k)+'<br><strong>Arme :</strong> '+esc(r.w)+'<br><strong>Lieu :</strong> '+esc(r.p)+'</p></div>'+(w.length?'<h3>Gagnante'+(w.length>1?'s':'')+' : '+w.join(", ")+'</h3>'+(r.tie?'<p style="color:var(--mut)">Égalité de points aux épreuves.</p>':''):'<h3>Personne n’a trouvé : la meurtrière gagne.</h3>')
+}
+
+/* ---------- écran TV (aucun secret) ---------- */
+var seenT0=null,tvStart=0;
+setInterval(function(){var e=$("cd");if(!e||!S||!S.ctl)return;var r=Math.max(0,Math.ceil(S.ctl.dur-(Date.now()-tvStart)/1000));e.textContent=Math.floor(r/60)+":"+("0"+r%60).slice(-2)},300);
+function susHtml(){return '<div class="eb">Manoir de Valombre</div><h1>Les suspects</h1><p>Chaque invité a quelque chose à cacher.</p><div class="chips">'+plIds().map(function(i){return '<span class="chip" style="font-size:clamp(22px,4vw,44px);padding:10px 26px">'+pn(i)+'</span>'}).join("")+'</div>'}
+function tvView(){
+ document.body.classList.remove("tvfull");
+ var ph=dig(S,["ctl","phase"])||"lobby",ids=plIds(),info=S&&S.info,h="";
+ if(!S){$("app").innerHTML='<h2>Code introuvable</h2>';return}
+ if(ph==="lobby"){h='<div class="grid"><div><div class="eb">La Soirée maudite</div><h1>Rejoignez la partie</h1><div class="big">'+code+'</div><div class="chips">'+ids.map(function(i){return '<span class="chip">'+pn(i)+'</span>'}).join("")+'</div></div>'+qrHtml()+'</div>'}
+ else if(ph==="play"){
+  var c=S.ctl,sn=c.slide||0;if(c.t0&&c.t0!==seenT0){seenT0=c.t0;tvStart=Date.now()}
+  document.body.classList.add("tvfull");
+  h=(sn===3?susHtml():'<img class="sl" alt="Diapositive '+(sn+1)+'" src="slides/s-'+("0"+(sn+1)).slice(-2)+'.jpg">')+(c.t0?'<div class="cd" id="cd"></div>':'')}
+ else if(ph==="accuse"){
+  h='<div class="eb">'+esc(SC.title)+'</div><h1>'+(ph==="play"?'L’enquête commence':'Accusations')+'</h1>'+(ph==="play"?'<p>Un crime a été commis. Regardez vos téléphones : chacun connaît son rôle.</p>':'<p>Soumettez votre accusation définitive : <strong>'+Object.keys(S.done||{}).length+' / '+ids.length+'</strong> reçues.</p>');
+  if(info)h+='<div class="card"><h3>Suspects</h3><div class="chips">'+(info.sus||[]).map(function(s){return '<span class="chip">'+esc(s.n)+'</span>'}).join("")+'</div><h3>Armes</h3><div class="chips">'+(info.arm||[]).map(function(s){return '<span class="chip">'+esc(s)+'</span>'}).join("")+'</div><h3>Lieux</h3><div class="chips">'+(info.lieu||[]).map(function(s){return '<span class="chip">'+esc(s)+'</span>'}).join("")+'</div></div>'}
+ else h=resultHtml();
+ $("app").innerHTML=h
+}
+
+/* ---------- joueur ---------- */
+var CL={lieu:"Lieu",arme:"Arme",pers:"Personne"};
+function playerView(){
+ if(!S||!S.ctl){$("app").innerHTML='<h2>Code introuvable</h2><p>Vérifie le code affiché sur la TV.</p>';return}
+ var me=dig(S,["players",pid]);
+ if(!me){$("app").innerHTML='<div class="eb">La Soirée maudite</div><h2>Rejoindre '+esc(code)+'</h2><p>Tu es l’un des suspects : entre <strong>ton propre prénom</strong>.</p><input id="nm" maxlength="20" placeholder="Ton prénom" autocomplete="given-name"><button class="btn" id="jn">Rejoindre</button>';
+  $("jn").onclick=function(){var n=$("nm").value.trim();if(n)T.set(room()+"/players/"+pid,{n:n}).then(function(){last=null;tick()})};return}
+ var ph=S.ctl.phase,h='<div class="eb">La Soirée maudite · '+esc(me.n)+'</div>';
+ if(ph==="lobby")h+='<h2>Tu es dans la partie</h2><p>Regarde l’écran : la partie va bientôt commencer.</p>';
+ else if(ph==="end")h+=resultHtml()+(dig(S,["result","win"])&&S.result.win.indexOf(pid)>-1?'<h2>Tu as gagné !</h2>':'');
+ else if(!P)h+='<p>Chargement de ton rôle…</p>';
+ else{
+  h+='<div class="card"><h3>Tu es '+esc(me.n)+'</h3><p>Invité(e) de Gabriel de Valombre, et suspect(e).</p><p><strong>Ton secret :</strong> à renseigner (document d’animation).</p>'+(P.killer?'<p class="kill">Tu es la meurtrière. Oriente les soupçons ailleurs.</p>':'<p>Tu es innocent(e). Trouve le coupable, l’arme et le lieu.</p>')+'</div>';
+  if(ph==="play"){
+   var cl=P.clues?Object.keys(P.clues).sort(function(a,b){return +a.slice(1)-+b.slice(1)}):[];
+   h+='<div class="card"><h3>Ton défi secret</h3><p>'+esc(P.def||"—")+'</p><p style="color:var(--mut);font-size:14px">Réussis-le sans le révéler, puis dis-le à l’animatrice.</p></div><div class="card"><h3>Tes indices</h3>'+(cl.length?'<ul>'+cl.map(function(k){var c=P.clues[k];return '<li><strong>'+esc(CL[c.c]||"")+'</strong> · '+esc(c.t)+'</li>'}).join("")+'</ul>':'<p style="color:var(--mut)">Aucun indice pour l’instant.</p>')+'</div><h3>Mes notes</h3><textarea id="nt" rows="4" placeholder="Tes déductions…"></textarea>';
+  }else if(ph==="accuse"){
+   if(dig(S,["done",pid]))h+='<h2>Accusation envoyée</h2><p>Elle est définitive. Attends la révélation.</p>';
+   else{var opt=function(a){return a.map(function(x){return '<option value="'+esc(x[0])+'">'+esc(x[1])+'</option>'}).join("")},inf=S.info||{sus:[],arm:[],lieu:[]};
+    h+='<h2>Ton accusation définitive</h2><label>Coupable<select id="ak">'+opt(inf.sus.map(function(x){return [x.i,x.n]}))+'</select></label><label>Arme<select id="aw">'+opt(inf.arm.map(function(x,i){return [i,x]}))+'</select></label><label>Lieu<select id="ap">'+opt(inf.lieu.map(function(x,i){return [i,x]}))+'</select></label><button class="btn" id="as">Valider (définitif)</button>'}
+  }
+ }
+ $("app").innerHTML=h;
+ var nt=$("nt");if(nt){nt.value=localStorage.getItem("nt"+code+pid)||"";nt.oninput=function(){localStorage.setItem("nt"+code+pid,nt.value)}}
+ if($("as"))$("as").onclick=function(){T.set("sub/"+code+"/"+pid,{k:$("ak").value,w:+$("aw").value,p:+$("ap").value}).then(function(){return T.set(room()+"/done/"+pid,true)}).then(function(){last=null;tick()})}
+}
+
+function view(){if(mode==="host")hostView();else if(mode==="tv")tvView();else if(mode==="player")playerView()}
+window.addEventListener("hashchange",function(){location.reload()});
+if(mode==="home")home();else tick();
+</script>
+</body>
+</html>
