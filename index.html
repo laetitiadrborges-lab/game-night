@@ -80,6 +80,9 @@ dialog h3{font-size:30px;margin-bottom:6px}
 .chips{display:flex;flex-wrap:wrap;gap:8px}
 .chip[aria-pressed="true"]{background:var(--acc);border-color:var(--acc);color:var(--onacc)}
 .code{font:700 46px "Playfair Display",serif;letter-spacing:.12em;color:var(--acc)}
+dialog{max-height:90vh;overflow:auto}
+dialog h4{font:700 12px "DM Sans",sans-serif;letter-spacing:.08em;text-transform:uppercase;color:var(--mut);margin:16px 0 6px}
+.db ul{margin:0;padding-left:18px;font-size:14px}.db li{margin-bottom:4px}
 </style>
 </head>
 <body>
@@ -95,7 +98,7 @@ dialog h3{font-size:30px;margin-bottom:6px}
   </div>
   <div class="covers" id="covers"></div>
 </header>
-<p class="warn"><strong>Prototype.</strong> Les visuels sont des illustrations provisoires, à remplacer par tes créations. Les 5 jeux sans badge sont les tiens (classement provisoire, infos à renseigner). Les jeux marqués « Exemple fictif » sont inventés pour se faire une idée du catalogue : leurs descriptions, durées et nombres de joueurs sont fictifs. Le lancement de partie est simulé.</p>
+<p class="warn"><strong>Prototype.</strong> Les visuels sont des illustrations provisoires, à remplacer par tes créations. Quatre jeux (La Soirée maudite, Girls Night, Le Braquage, Commando) sont décrits d’après tes documents ; durées, âges, matériel et barèmes restent à renseigner. Mission Taupe et La chambre des disparus n’ont pas encore de fiche. Les jeux marqués « Exemple fictif » sont inventés. Le lancement de partie est simulé.</p>
 
 <section id="concept">
 <div class="eb">Le concept</div>
@@ -155,26 +158,43 @@ q:'<text x="100" y="170" text-anchor="middle" font-size="150" font-family="Georg
 flask:'<path d="M82 70H118V105L152 170Q158 188 140 188H60Q42 188 48 170L82 105Z"/><circle cx="92" cy="165" r="8" fill="#3F2380" fill-opacity=".35"/><circle cx="116" cy="150" r="6" fill="#3F2380" fill-opacity=".35"/>',
 bolt:'<path d="M115 55L55 135H95L80 195L150 105H108Z"/>',
 team:'<circle cx="60" cy="130" r="26"/><circle cx="140" cy="130" r="26"/><circle cx="100" cy="95" r="30" fill-opacity=".75"/><path d="M40 190q20-35 40 0ZM120 190q20-35 40 0ZM70 170q30-45 60 0Z"/>',
-mask:'<path d="M45 90Q100 60 155 90Q155 160 100 185Q45 160 45 90Z"/><ellipse cx="75" cy="115" rx="16" ry="9" fill="#3F2380"/><ellipse cx="125" cy="115" rx="16" ry="9" fill="#3F2380"/><path d="M80 152Q100 166 120 152" stroke="#3F2380" stroke-width="7" fill="none" stroke-linecap="round"/>'};
+mask:'<path d="M45 90Q100 60 155 90Q155 160 100 185Q45 160 45 90Z"/><ellipse cx="75" cy="115" rx="16" ry="9" fill="#3F2380"/><ellipse cx="125" cy="115" rx="16" ry="9" fill="#3F2380"/><path d="M80 152Q100 166 120 152" stroke="#3F2380" stroke-width="7" fill="none" stroke-linecap="round"/>',
+heart:'<path d="M100 185C40 140 40 85 75 78C92 75 100 88 100 95C100 88 108 75 125 78C160 85 160 140 100 185Z"/>',
+target:'<circle cx="100" cy="115" r="58" fill="none" stroke="#fff" stroke-width="10"/><circle cx="100" cy="115" r="30" fill="none" stroke="#fff" stroke-width="10"/><circle cx="100" cy="115" r="8"/>'};
 var GR=[["#2F1A66","#8A63DC"],["#8E3FC4","#E8A4E0"],["#3B3FC4","#A9B6F7"],["#4B2A94","#B497F0"],["#5A2D9C","#D3A8F5"],["#B146B8","#F4B3DB"],["#262070","#7C7AF0"],["#6A2FA8","#E2A0F0"],["#3A2E9C","#C2B2FA"],["#7A3FD0","#C9A8F7"]];
 var uid=0;
 function art(g){var k=GR[g.g],i=++uid;return '<svg viewBox="0 0 200 250" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><defs><linearGradient id="a'+i+'" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="'+k[0]+'"/><stop offset="1" stop-color="'+k[1]+'"/></linearGradient></defs><rect width="200" height="250" fill="url(#a'+i+')"/><circle cx="30" cy="40" r="60" fill="#fff" fill-opacity=".08"/><circle cx="185" cy="215" r="70" fill="#fff" fill-opacity=".1"/><g fill="#fff" fill-opacity=".92" transform="translate(0,-18)">'+GL[g.k]+'</g></svg>'}
-var OCC=["Entre filles","Entre amis","EVJF / EVG","Soirée à thème","Éducatif"];
-var MEC=["Enquête et murder mystery","Déduction et rôles cachés","Questions, quiz et défis","Chacun pour soi","En équipes"];
-var R="Fiche à rédiger avec ton fichier.",X="Exemple fictif pour se faire une idée du catalogue.";
+var OCC=["Entre filles","Entre amis","En famille","EVJF / EVG","Soirée à thème","Éducatif"];
+var MEC=["Enquête et murder mystery","Déduction et rôles cachés","Questions, quiz et défis","Débats et mises en situation","Chacun pour soi","En équipes"];
+var R="Fiche à venir : le fichier de ce jeu n’a pas encore été transmis.",X="Exemple fictif pour se faire une idée du catalogue.";
 var G=[
-{n:"La Soirée maudite",k:"manoir",g:0,o:["Entre amis","Soirée à thème"],m:["Enquête et murder mystery","Déduction et rôles cachés"],d:"Murder mystery : suspects, armes et lieux à identifier, épreuves pour obtenir des indices, secrets, puis accusation finale. Les téléphones servent d’outils d’enquête pour recevoir des informations privées.",s:"TV + mobile (un téléphone par joueur)"},
-{n:"Qui est la plus susceptible ?",k:"crown",g:1,o:["Entre filles","Entre amis"],m:["Questions, quiz et défis","Chacun pour soi"],d:R},
-{n:"Soirée de jeux entre copines",k:"dice",g:2,o:["Entre filles"],m:["Questions, quiz et défis","En équipes"],d:R},
-{n:"Mission Taupe",k:"lens",g:3,o:["Entre amis"],m:["Déduction et rôles cachés"],d:R},
+{n:"La Soirée maudite",k:"manoir",g:0,o:["Entre amis","Soirée à thème"],m:["Enquête et murder mystery","Déduction et rôles cachés","Chacun pour soi"],
+d:"Un manoir, une panne de courant et un assassinat. Chaque joueur incarne un suspect avec un lien avec la victime et un secret ; l’un d’eux est le meurtrier. Il faut trouver le coupable, l’arme et le lieu, chacun pour soi : il n’y a qu’un gagnant.",
+v:["Épreuves collectives sur l’écran, différentes à chaque partie : code à résoudre, bougies à remettre en ordre, alibis à démêler, cadran, message codé, suite logique","Le gagnant d’une épreuve choisit entre un indice sur le crime et une information sur le secret d’un autre personnage","Défis secrets individuels, renouvelés pendant la soirée, qui donnent de nouvelles informations","Duels de questions rapides : le premier à trois bonnes réponses consulte un indice du perdant","Une accusation finale secrète : coupable + arme + lieu"],
+pl:"7 (version actuelle)",s:"TV pour l’histoire, les épreuves et les consignes ; téléphone pour le rôle, les défis, les indices et l’accusation",
+a:"Aujourd’hui animé par la créatrice (validation des défis, indices, duels). L’application pourrait gérer rôles, indices, scores et accusations ; certaines actions sociales resteraient à valider."},
+{n:"Girls Night",k:"heart",g:1,o:["Entre filles","EVJF / EVG"],m:["Questions, quiz et défis","Débats et mises en situation"],
+d:"Une soirée de jeux entre filles autour d’un écran commun : dilemmes amoureux, révélations, débats, mises en situation et choix difficiles. Pensée pour une soirée à la maison, un anniversaire, une soirée pyjama ou un EVJF.",
+v:["Red Flag : signal d’alerte, acceptable ou « ça dépend » ? Réponses simultanées, puis débat","Dilemmes amoureux : deux options difficiles à choisir et défendre","Qui est la plus susceptible de… ? : votes révélés en même temps","Who’s that girl ? : reconnaître une personnalité, ou une participante grâce à une anecdote","Le Tribunal : un procès fictif avec accusée, victime, avocates et jury","Kiss, Marry, Kill : un format rapide pour finir la soirée","Modules jouables séparément ; niveau de questions léger, personnel ou plus piquant"],
+s:"Écran commun pour les situations et révélations ; téléphones pour voter discrètement ou recevoir une consigne privée",
+a:"Avec animatrice, ou guidé par voix off IA (pause et débat prolongé possibles). Pas de classement obligatoire."},
+{n:"Le Braquage",k:"safe",g:6,o:["Entre amis"],m:["Chacun pour soi","Questions, quiz et défis"],
+d:"Chaque participant incarne un bandit et cherche à finir avec le plus gros butin. Épreuves, choix stratégiques, bluff, duels et événements surprises, dans l’ambiance d’un film de braquage.",
+v:["Profils de bandits, avec avantages et inconvénients","Épreuves : mémoriser le plan du coffre, résoudre des codes, estimer la valeur d’objets, blind test de séries","Règlements de compte : duels entre joueurs","Enveloppes : gains, pertes ou surprises, avec bluff et prise de risque","Choix d’une planque : villa, penthouse, bunker ou appartement","Mécanique de taupe envisagée : à confirmer"],
+s:"TV pour l’histoire, les plans, les énigmes, les extraits audio et les révélations ; téléphones pour les profils privés, les réponses et les décisions",
+a:"Animateur qui suit le butin, ou voix off IA. Barèmes et règles exactes à reprendre de ton diaporama."},
+{n:"Commando",k:"target",g:3,o:["En famille","Entre amis"],m:["En équipes","Questions, quiz et défis"],
+d:"Un jeu de soirée en équipes pour environ 8 à 10 joueurs : une mission commando en sept manches qui sollicitent des compétences différentes. Les équipes choisissent leurs représentants avant de découvrir l’épreuve.",
+v:["Réflexion : énigmes, grilles de logique, équations en symboles","Observation : une image affichée une minute, puis des questions de mémoire","Cinéma : reconnaître des films à partir d’images","Écoute : blind test d’environ 30 extraits, seuls les joueurs désignés répondent","Précision : château de cartes ou Juste Prix (format à préciser)","Communication : faire deviner des expressions à son équipe","Rapidité : questions flash et duels"],
+pl:"8 à 10 (en équipes)",s:"TV pour le briefing, les pictogrammes, les consignes, les images et les résultats ; téléphones pour choisir les représentants, répondre et suivre les scores",
+a:"Animateur qui arbitre, ou voix off IA. Le château de cartes demande du matériel et une validation humaine."},
+{n:"Mission Taupe",k:"lens",g:5,o:["Entre amis"],m:["Déduction et rôles cachés"],d:R},
 {n:"La chambre des disparus",k:"door",g:4,o:["Entre amis","Soirée à thème"],m:["Enquête et murder mystery"],d:R},
 {n:"Le Grand Défi de la Future Mariée",k:"ring",g:5,x:1,o:["EVJF / EVG","Entre filles"],m:["Questions, quiz et défis","En équipes"],d:X,du:"1 h 30",p:"6 à 12"},
-{n:"Le Casse du Siècle",k:"safe",g:6,x:1,o:["EVJF / EVG","Entre amis"],m:["En équipes","Enquête et murder mystery"],d:X,du:"1 h 45",p:"6 à 10"},
 {n:"La Nuit des Citrouilles",k:"pump",g:7,x:1,o:["Soirée à thème","Entre amis"],m:["Chacun pour soi","Questions, quiz et défis"],d:X,du:"1 h",p:"4 à 10"},
 {n:"Quiz Culture Express",k:"q",g:8,x:1,o:["Éducatif","Entre amis"],m:["Questions, quiz et défis","Chacun pour soi"],d:X,du:"45 min",p:"2 à 12"},
 {n:"Le Laboratoire du Savant Fou",k:"flask",g:3,x:1,o:["Éducatif"],m:["En équipes","Questions, quiz et défis"],d:X,du:"1 h",p:"4 à 12"},
 {n:"Duel de Cerveaux",k:"bolt",g:9,x:1,o:["Éducatif","Entre amis"],m:["Chacun pour soi"],d:X,du:"40 min",p:"2 à 6"},
-{n:"Équipes en Folie",k:"team",g:2,x:1,o:["Entre amis","Entre filles"],m:["En équipes"],d:X,du:"1 h 15",p:"6 à 14"},
 {n:"Qui ment ?",k:"mask",g:6,x:1,o:["Entre amis","Entre filles"],m:["Déduction et rôles cachés"],d:X,du:"50 min",p:"5 à 10"}
 ];
 function $(i){return document.getElementById(i)}
@@ -193,8 +213,9 @@ function build(){
  $("covers").innerHTML=[0,1,2].map(function(i){return '<div class="cv">'+art(G[i])+'<div class="t">'+G[i].n+'</div></div>'}).join("");
 }
 function sheet(i){var g=G[i];
- $("dc").innerHTML='<div class="cv">'+art(g)+'</div><div class="db"><h3 id="dt">'+g.n+'</h3><p style="margin:0;color:var(--mut)">'+g.d+'</p><dl class="dl"><dt>Durée</dt><dd>'+(g.du||"À renseigner")+'</dd><dt>Joueurs</dt><dd>'+(g.p||"À renseigner")+'</dd><dt>Âge</dt><dd>À renseigner</dd><dt>Matériel</dt><dd>À renseigner</dd><dt>Support</dt><dd>'+(g.s||"À confirmer")+'</dd></dl><p style="font-size:13px;color:var(--mut)">Cette fiche ne révèle aucun secret du jeu.</p><button class="btn" id="go">Lancer une partie</button><button class="btn alt" id="x">Fermer</button></div>';
- $("x").onclick=function(){$("dlg").close()};$("go").onclick=function(){launch(g)};$("dlg").showModal()}
+ var v=g.v?'<h4>Ce qu’on va vivre</h4><ul>'+g.v.map(function(x){return '<li>'+x+'</li>'}).join("")+'</ul>':"";
+ $("dc").innerHTML='<div class="cv">'+art(g)+'</div><div class="db"><h3 id="dt">'+g.n+'</h3><p style="margin:0;color:var(--mut)">'+g.d+'</p>'+v+'<dl class="dl"><dt>Durée</dt><dd>'+(g.du||"À renseigner")+'</dd><dt>Joueurs</dt><dd>'+(g.pl||g.p||"À renseigner")+'</dd><dt>Âge</dt><dd>À renseigner</dd><dt>Matériel</dt><dd>À renseigner</dd><dt>Support</dt><dd>'+(g.s||"À confirmer")+'</dd><dt>Animation</dt><dd>'+(g.a||"Animateur humain ou voix IA")+'</dd></dl><p style="font-size:13px;color:var(--mut)">Cette fiche ne révèle aucun secret du jeu.</p><button class="btn" id="go">Lancer une partie</button><button class="btn alt" id="x">Fermer</button></div>';
+ $("x").onclick=function(){$("dlg").close()};$("go").onclick=function(){if(g.n==="La Soirée maudite"){location.href="murder.html";return}launch(g)};$("dlg").showModal()}
 var sup="Combiné",ani="Animateur humain";
 function launch(g){
  function seg(id,o,c){return '<div class="chips" id="'+id+'">'+o.map(function(x){return '<button class="chip" aria-pressed="'+(x==c)+'">'+x+'</button>'}).join("")+'</div>'}
