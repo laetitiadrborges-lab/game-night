@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Murder mystery – salon de jeu (test)</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&display=swap">
 <style>
 :root{--bg:#FFFFFF;--soft:#F4EFFC;--ink:#2B1B4A;--mut:#6E6486;--line:#E6DDF5;--acc:#6A3FC4;--onacc:#fff;--red:#B3243B;box-sizing:border-box;padding:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px)}
 @media (prefers-color-scheme:dark){:root{--bg:#150F26;--soft:#211838;--ink:#F3EEFF;--mut:#B8AED6;--line:#352A57;--acc:#9B7BF0;--onacc:#150F26;--red:#FF7A90}}
@@ -32,6 +33,20 @@ ul{padding-left:20px;margin:6px 0}
 details summary{cursor:pointer;padding:2px 0}
 .sl{width:100%;display:block;border-radius:14px}.cd{position:fixed;right:24px;bottom:24px;background:rgba(20,10,40,.88);color:#fff;font:700 clamp(36px,6vw,80px) Georgia,serif;padding:8px 24px;border-radius:18px}
 .ref{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;margin:8px 0 12px}.ref figure{margin:0;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--bg)}.ref img{display:block;width:100%;aspect-ratio:1.2;object-fit:cover}.ref figcaption{font-size:13px;font-weight:600;padding:6px 8px;text-align:center}
+body.noir{--bg:#0a0f1e;--soft:#121b38;--ink:#f3ead6;--mut:#b3a98f;--line:#3b3a52;--acc:#e8bd55;--onacc:#1a1408;--red:#ff8a8a;background:radial-gradient(90% 60% at 80% 0%,#1a2a58,transparent 70%),#0a0f1e;font-family:"Cormorant Garamond",Georgia,serif;font-size:19px}
+body.noir h1,body.noir h2,body.noir h3,body.noir .eb,body.noir .big,body.noir .btn,body.noir .chip{font-family:"Cinzel",Georgia,serif}
+body.noir h1,body.noir h2{color:#f0cf7e;letter-spacing:.02em}body.noir h3{color:var(--acc);font-size:17px;letter-spacing:.05em}
+body.noir .card,body.noir .row{border:1px solid #e8bd5533}body.noir .btn{border-radius:2px;letter-spacing:.08em;text-transform:uppercase;font-size:13px}body.noir .btn.alt{border-color:var(--acc);color:var(--acc)}
+body.noir select,body.noir input,body.noir textarea{border-radius:2px;border-color:#e8bd5555;background:#0b1328}
+#phs{max-width:1000px;margin:0 auto;padding:10px 16px 0}
+#phs .hd{display:flex;gap:8px;align-items:center;justify-content:space-between;margin:0 0 6px}#phs .hd strong{font-family:"Cinzel",Georgia,serif;color:var(--acc);letter-spacing:.08em;font-size:14px}
+#phs .fw{position:relative}#phs iframe{width:100%;aspect-ratio:16/9;border:0;display:block;background:#070b16;border-radius:6px}
+#phs .pcd{position:absolute;right:8px;bottom:8px;background:#000c;color:#fff;font:700 clamp(20px,5vw,40px) "Cinzel",Georgia,serif;padding:4px 14px;border-radius:6px}
+#phs.min .fw{display:none}
+#phs.full{position:fixed;inset:0;z-index:1000;max-width:none;margin:0;padding:0;background:#000;display:block}
+#phs.full .hd{position:absolute;top:6px;right:8px;z-index:2;margin:0}#phs.full .hd strong,#phs.full #pmin{display:none}
+#phs.full .fw{position:fixed;inset:0;display:flex;align-items:center;justify-content:center}#phs.full iframe{width:min(100vw,177.78vh);border-radius:0}
+@media (orientation:portrait){#phs.full .fw{inset:auto;top:0;left:100%;width:100vh;height:100vw;transform-origin:0 0;transform:rotate(90deg)}#phs.full iframe{width:min(100vh,177.78vw)}}
 .tvfull main{max-width:1500px;padding:10px}
 </style>
 </head>
@@ -61,18 +76,28 @@ else{T={demo:true,
  get:function(p){var d={};try{d=JSON.parse(localStorage.getItem("mm")||"{}")}catch(e){}return Promise.resolve(dig(d,p.split("/")))}}}
 
 var pid=sessionStorage.getItem("pid");if(!pid){pid=Math.random().toString(36).slice(2,8);sessionStorage.setItem("pid",pid)}
-var tvCode=(new URLSearchParams(location.search).get("tv")||"").toUpperCase();
-var hostCode=sessionStorage.getItem("host");
+var qs=new URLSearchParams(location.search);
+var tvCode=(qs.get("tv")||"").toUpperCase();
+var hostQ=(qs.get("host")||"").toUpperCase();
+if(hostQ){sessionStorage.setItem("host",hostQ);sessionStorage.setItem("hk"+hostQ,qs.get("k")||"")}
+var hostCode=sessionStorage.getItem("host"),pairCode=sessionStorage.getItem("pair");
 var hash=location.hash.slice(1).toUpperCase();
-var mode=tvCode?"tv":(hash&&hash!==hostCode?"player":(hostCode?"host":"home"));
-var code=tvCode||(mode==="player"?hash:hostCode);
+var mode=tvCode?"tv":(hash&&hash!==hostCode?"player":(hostCode?"host":(pairCode?"pair":"home")));
+var code=tvCode||(mode==="player"?hash:(mode==="pair"?pairCode:hostCode));
 var last=null,S=null,P=null,HS=null;
 function room(){return "rooms/"+code}
-function saveHS(){sessionStorage.setItem("hs"+code,JSON.stringify(HS))}
-if(mode==="host"){try{HS=JSON.parse(sessionStorage.getItem("hs"+code))}catch(e){}}
+function saveHS(){try{sessionStorage.setItem("hs"+code,JSON.stringify(HS))}catch(e){}if(HS)T.set("host/"+code,HS)}
+function normHS(d){d.next=d.next||{lieu:0,arme:0,pers:0};d.cn=d.cn||{};d.pts=d.pts||{};d.dused=d.dused||[];d.eps=d.eps||[];d.ctl=d.ctl||{};return d}
+var hsReady=false,hsTried=false,hkOK=null;
+if(mode==="host"){try{HS=JSON.parse(sessionStorage.getItem("hs"+code))}catch(e){}if(HS)hsReady=true}
 
 function tick(){
- if(!code)return;
+ if(!code||mode==="pair"||mode==="home")return;
+ if(mode==="host"){
+  if(hkOK===null){hkOK=0;T.get("hk/"+code).then(function(t){hkOK=(!t||t===sessionStorage.getItem("hk"+code))?1:-1}).catch(function(){hkOK=1});return}
+  if(hkOK===-1){$("app").innerHTML='<h2>Lien animatrice invalide</h2><p>Rescanne le QR code affiché sur l’ordinateur qui a créé la partie.</p>';return}
+  if(hkOK!==1)return;
+  if(!hsReady){if(!hsTried){hsTried=true;T.get("host/"+code).then(function(d){if(d)HS=normHS(d);hsReady=true;last=null}).catch(function(){hsReady=true})}return}}
  var reqs=[T.get(room())];if(mode==="player")reqs.push(T.get("priv/"+code+"/"+pid));
  Promise.all(reqs).then(function(r){
   var k=JSON.stringify(r);if(k===last)return;
@@ -87,10 +112,19 @@ function plIds(){return Object.keys(dig(S,["players"])||{})}
 function pn(id){return esc(dig(S,["players",id,"n"])||"?")}
 function qrHtml(){var u=location.origin+location.pathname+"#"+code;try{var q=qrcode(0,"M");q.addData(u);q.make();return '<div class="qr">'+q.createImgTag(5,0)+'</div>'}catch(e){return ''}}
 
+
+function qrFor(u,sz){try{var q=qrcode(0,"M");q.addData(u);q.make();return '<div class="qr">'+q.createImgTag(sz||5,0)+'</div>'}catch(e){return ''}}
+function pairView(){
+ var base=location.origin+location.pathname,hu=base+"?host="+code+"&k="+sessionStorage.getItem("hk"+code);
+ $("app").innerHTML='<div class="eb">Partie '+code+' créée</div><h1>Prépare ta soirée</h1><div class="grid"><div><h3>1. Ton téléphone devient la console animatrice</h3><p>Scanne ce QR code avec <strong>ton</strong> téléphone. Tu y verras les secrets, les indices et les commandes. <strong>Ne le montre à personne.</strong></p></div>'+qrFor(hu,5)+'</div><div class="card"><h3>2. Cet ordinateur devient l’écran de la télé</h3><p>Branche-le à la télé (câble HDMI ou projection), puis clique ci-dessous. Cet écran ne montre aucun secret : c’est lui que les invités regardent.</p><button class="btn" id="gtv">Afficher l’écran TV</button></div><details class="card"><summary>Pas de téléphone pour l’animatrice ?</summary><p>Tu peux piloter depuis cet ordinateur, et ouvrir l’écran TV dans un autre onglet.</p><button class="btn alt" id="gho">Piloter depuis cet ordinateur</button></details><p><a href="#" id="gnw" style="color:var(--mut)">Annuler et créer une autre partie</a></p>'+demoNote();
+ $("gtv").onclick=function(){location.href=location.pathname+"?tv="+code};
+ $("gho").onclick=function(){sessionStorage.setItem("host",code);sessionStorage.removeItem("pair");location.reload()};
+ $("gnw").onclick=function(e){e.preventDefault();sessionStorage.removeItem("pair");location.reload()}
+}
 function home(){
  $("app").innerHTML='<div class="eb">Murder mystery · test</div><h1>La Soirée maudite</h1><p>Distribue des rôles secrets sur les téléphones, donne des indices et des défis, puis recueille les accusations finales. Diapos, armes, lieux, indices, défis et questions de duel sont les tiens. Chaque joueur entre son propre prénom et devient suspect. Les secrets des personnages restent à renseigner.</p><button class="btn" id="mk">Créer une partie</button>'+demoNote();
  $("mk").onclick=function(){var A="ABCDEFGHJKMNPQRSTUVWXYZ",c="";for(var i=0;i<4;i++)c+=A[rnd(A.length)];
-  T.set("rooms/"+c,{ctl:{phase:"lobby"}}).then(function(){sessionStorage.setItem("host",c);hostCode=c;code=c;mode="host";last=null;tick()})}
+  var tk=Math.random().toString(36).slice(2,10);Promise.all([T.set("rooms/"+c,{ctl:{phase:"lobby"}}),T.set("hk/"+c,tk)]).then(function(){sessionStorage.setItem("hk"+c,tk);sessionStorage.setItem("pair",c);pairCode=c;code=c;mode="pair";pairView()})}
 }
 
 var FEM_ROLES=["La femme","La gouvernante","La meilleure amie","La mère"],MAS_ROLES=["Le frère","L’associé","L’investisseur"],SPARE_ROLE="Un proche";
@@ -115,7 +149,7 @@ function launch(){
  selK.forEach(function(k){var e=newEp(k,nms);if(e)eps.push({k:k,p:e.p,sol:e.sol})});
  HS.eps=eps.map(function(e){return {k:e.k,sol:e.sol}});saveHS();
  w.push(T.set(room()+"/eps",eps.map(function(e){return {k:e.k,p:e.p}})));
- w.push(T.set(room()+"/info",{sus:ids.map(function(id,k){return {i:id,n:pname(id),r:rl[k]}}),arm:SC.arm,lieu:SC.lieu}));
+ w.push(T.set(room()+"/info",{sus:ids.map(function(id,k){return {i:id,n:pname(id),r:rl[k]}}),arm:SC.arm,lieu:SC.lieu,ph:!($("phc")&&!$("phc").checked)}));
  Promise.all(w).then(function(){return pub({phase:"play",slide:0})})
 }
 function giveClue(id,cat){
@@ -136,7 +170,7 @@ function reveal(){
 function hostView(){
  var ph=dig(S,["ctl","phase"])||"lobby",h="",ids=plIds(),tvUrl=location.pathname+"?tv="+code;
  if(ph==="lobby"){
-  h='<div class="grid"><div><div class="eb">Console animatrice</div><h1>Salon '+code+'</h1><p>Chaque joueur scanne le QR code ou tape le code, puis <strong>entre son propre prénom : il devient son nom de suspect</strong>. Ouvre l’<strong>écran TV</strong> dans un autre onglet et projette-le : il ne montre aucun secret.</p><div class="big">'+code+'</div><a class="btn alt" href="'+tvUrl+'" target="_blank" rel="noopener">Ouvrir l’écran TV</a></div>'+qrHtml()+'</div><h3 style="margin-top:18px">Suspects ('+ids.length+')</h3><div class="chips">'+(ids.length?ids.map(function(i){var g=gof(i);return '<button class="chip gb" data-id="'+i+'" style="border:0;color:var(--ink)" title="Changer le genre">'+pn(i)+' · '+(g==="F"?"Femme":"Homme")+'</button>'}).join(""):'<span style="color:var(--mut)">En attente…</span>')+'</div><p style="color:var(--mut);font-size:14px">Le genre sert à choisir le lien avec Gabriel. Touche un prénom pour le corriger.</p><div class="card"><strong>Épreuves de la soirée</strong><br>'+EPK.map(function(k){var on=epsSel().indexOf(k)>-1;return '<label style="display:block;margin:6px 0"><input type="checkbox" class="epc" data-k="'+k+'" '+(on?"checked":"")+' style="width:auto;margin:0 8px 0 0">'+EPL[k].l+(k==="alibis"?" (3 à 7 joueurs)":"")+'</label>'}).join("")+'</div><button class="btn" id="go"'+(ids.length>=2&&ids.length<=8?'':' disabled')+'>Distribuer les rôles et lancer</button><p style="color:var(--mut);font-size:14px">De 2 à 8 joueurs.</p>'+demoNote();
+  h='<div class="grid"><div><div class="eb">Console animatrice</div><h1>Salon '+code+'</h1><p>Chaque joueur scanne le QR code ou tape le code, puis <strong>entre son propre prénom : il devient son nom de suspect</strong>. L’<strong>écran TV</strong> (ton ordinateur branché à la télé) affiche le même code et ne montre aucun secret.</p><div class="big">'+code+'</div><a class="btn alt" href="'+tvUrl+'" target="_blank" rel="noopener">Ouvrir l’écran TV</a></div>'+qrHtml()+'</div><h3 style="margin-top:18px">Suspects ('+ids.length+')</h3><div class="chips">'+(ids.length?ids.map(function(i){var g=gof(i);return '<button class="chip gb" data-id="'+i+'" style="border:0;color:var(--ink)" title="Changer le genre">'+pn(i)+' · '+(g==="F"?"Femme":"Homme")+'</button>'}).join(""):'<span style="color:var(--mut)">En attente…</span>')+'</div><p style="color:var(--mut);font-size:14px">Le genre sert à choisir le lien avec Gabriel. Touche un prénom pour le corriger.</p><div class="card"><strong>Où verront-ils les diapos ?</strong><p style="margin:6px 0">Avec une télé : ouvre le lien ci-dessous sur la télé, ou sur un ordinateur relié à la télé. Sans télé : laisse la case cochée, les diapos s’afficheront sur les téléphones.</p><label style="display:block;margin:6px 0"><input type="checkbox" id="phc" '+(sessionStorage.getItem("ph"+code)==="0"?"":"checked")+' style="width:auto;margin:0 8px 0 0">Afficher les diapos sur les téléphones des joueurs</label><p style="margin:8px 0 0;word-break:break-all"><strong>Lien de l’écran TV :</strong><br><span id="tvl">'+location.origin+location.pathname+"?tv="+code+'</span><br><button class="btn sm alt" id="cpl">Copier le lien</button></p></div><div class="card"><strong>Épreuves de la soirée</strong><br>'+EPK.map(function(k){var on=epsSel().indexOf(k)>-1;return '<label style="display:block;margin:6px 0"><input type="checkbox" class="epc" data-k="'+k+'" '+(on?"checked":"")+' style="width:auto;margin:0 8px 0 0">'+EPL[k].l+(k==="alibis"?" (3 à 7 joueurs)":"")+'</label>'}).join("")+'</div><button class="btn" id="go"'+(ids.length>=2&&ids.length<=8?'':' disabled')+'>Distribuer les rôles et lancer</button><p style="color:var(--mut);font-size:14px">De 2 à 8 joueurs.</p>'+demoNote();
  }else if(!HS){h='<h2>Console indisponible</h2><p>Cette partie a été lancée depuis un autre onglet : rouvre la console dans l’onglet où tu as créé la partie.</p>'}
  else{
   h='<div class="eb">Console animatrice · '+code+'</div><h2>'+esc(SC.title)+'</h2><div class="card"><strong>Solution (secrète)</strong> : <span class="kill">'+esc(pname(HS.kp))+'</span>, '+esc(SC.arm[HS.sol.w])+', '+esc(SC.lieu[HS.sol.p])+'</div>';
@@ -153,6 +187,8 @@ function hostView(){
   }else{h+=resultHtml()}
  }
  $("app").innerHTML=h;
+ if($("phc"))$("phc").onchange=function(){sessionStorage.setItem("ph"+code,$("phc").checked?"1":"0")};
+ if($("cpl"))$("cpl").onclick=function(){var t=$("tvl").textContent;try{navigator.clipboard.writeText(t).then(function(){$("cpl").textContent="Lien copié"},function(){$("cpl").textContent="Sélectionne le lien et copie-le"})}catch(e){$("cpl").textContent="Sélectionne le lien et copie-le"}};
  if($("go"))$("go").onclick=launch;
  Array.prototype.forEach.call(document.querySelectorAll(".epc"),function(c){c.onchange=function(){var a=[];Array.prototype.forEach.call(document.querySelectorAll(".epc"),function(x){if(x.checked)a.push(x.getAttribute("data-k"))});sessionStorage.setItem("eps"+code,JSON.stringify(a))}});
  Array.prototype.forEach.call(document.querySelectorAll(".gb"),function(b){b.onclick=function(){var m=gmap(),id=b.getAttribute("data-id");m[id]=gof(id)==="F"?"H":"F";sessionStorage.setItem("gx"+code,JSON.stringify(m));hostView()}});
@@ -361,6 +397,20 @@ function doc(i,sus,eps){
  return '<!doctype html><html lang="fr"><meta charset="utf-8"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&display=swap"><style>'+SLCSS+'</style><body><div class="stage"><div class="sl">'+inner+'</div></div></body></html>'}
 return {doc:doc};
 })();
+var pSeen=null,pStart=0,pKey=null;
+function phoneSlides(show){
+ var m=$("phs");
+ if(!show){if(m){m.remove();pKey=null}return}
+ if(!m){m=document.createElement("div");m.id="phs";$("app").parentNode.insertBefore(m,$("app"));pKey=null;
+  m.innerHTML='<div class="hd"><strong>Diaporama</strong><span><button class="btn sm alt" id="pmin">Réduire</button><button class="btn sm" id="pfs">Plein écran</button></span></div><div class="fw"><iframe id="pfr" title="Diaporama"></iframe><div class="pcd" id="pcd" hidden></div></div>';
+  $("pmin").onclick=function(){var mn=m.classList.toggle("min");$("pmin").textContent=mn?"Afficher":"Réduire"};
+  $("pfs").onclick=function(){if(m.classList.contains("full")){m.classList.remove("full");$("pfs").textContent="Plein écran";try{if(document.fullscreenElement)document.exitFullscreen()}catch(e){}}else{m.classList.remove("min");m.classList.add("full");$("pfs").textContent="Fermer";try{var r=m.requestFullscreen&&m.requestFullscreen();if(r&&r.catch)r.catch(function(){})}catch(e){}}};
+  document.addEventListener("fullscreenchange",function(){if(!document.fullscreenElement&&m.classList.contains("full")){m.classList.remove("full");$("pfs").textContent="Plein écran"}})}
+ var c=S.ctl,sus=(S.info&&S.info.sus)||[],d=DK.doc(c.slide||0,sus,S.eps||[]);
+ if(pKey!==d){pKey=d;$("pfr").srcdoc=d}
+ if(c.t0&&c.t0!==pSeen){pSeen=c.t0;pStart=Date.now()}
+ if(!c.t0)pSeen=null}
+setInterval(function(){var e=$("pcd");if(!e||!S||!S.ctl)return;if(!S.ctl.t0){e.hidden=true;return}var r=Math.max(0,Math.ceil(S.ctl.dur-(Date.now()-pStart)/1000));e.hidden=false;e.textContent=Math.floor(r/60)+":"+("0"+r%60).slice(-2)},300);
 function myRole(){var l=dig(S,["info","sus"])||[];for(var i=0;i<l.length;i++)if(l[i].i===pid&&l[i].r)return "Ton lien avec Gabriel : "+l[i].r.charAt(0).toLowerCase()+l[i].r.slice(1)+". ";return ""}
 /* ---------- joueur ---------- */
 var CL={lieu:"Lieu",arme:"Arme",pers:"Personne"};
@@ -385,14 +435,16 @@ function playerView(){
   }
  }
  if(ph==="play"||ph==="accuse")h+=refHtml();
+ var showPh=ph==="play"&&S.info&&S.info.ph;
  $("app").innerHTML=h;
+ phoneSlides(!!showPh);
  var nt=$("nt");if(nt){nt.value=localStorage.getItem("nt"+code+pid)||"";nt.oninput=function(){localStorage.setItem("nt"+code+pid,nt.value)}}
  if($("as"))$("as").onclick=function(){T.set("sub/"+code+"/"+pid,{k:$("ak").value,w:+$("aw").value,p:+$("ap").value}).then(function(){return T.set(room()+"/done/"+pid,true)}).then(function(){last=null;tick()})}
 }
 
-function view(){if(mode==="host")hostView();else if(mode==="tv")tvView();else if(mode==="player")playerView()}
+function view(){var th=S&&S.ctl&&S.ctl.phase&&S.ctl.phase!=="lobby";document.body.classList.toggle("noir",!!th);if(mode==="host")hostView();else if(mode==="tv")tvView();else if(mode==="player")playerView()}
 window.addEventListener("hashchange",function(){location.reload()});
-if(mode==="home")home();else tick();
+if(mode==="home")home();else if(mode==="pair")pairView();else tick();
 </script>
 </body>
 </html>
