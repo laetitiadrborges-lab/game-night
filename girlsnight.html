@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Girls Night – salon de jeu (test)</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Caveat:wght@600&family=DM+Sans:wght@400;600;700&display=swap">
+<style>
+:root{--bg:#190611;--soft:#2a0c1d;--ink:#fff1f6;--mut:#d9a5ba;--line:#5a1d3a;--pink:#ff4d8d;--hot:#ff2e63;--green:#22c55e;--amber:#f59e0b;--red:#ef2b4b;box-sizing:border-box}
+*{box-sizing:border-box}
+body{margin:0;color:var(--ink);font:400 17px/1.45 "DM Sans",system-ui,sans-serif;background:radial-gradient(80% 50% at 85% 0%,#5a1240,transparent 70%),radial-gradient(70% 50% at 0% 100%,#4a0d2c,transparent 70%),var(--bg);min-height:100vh}
+main{max-width:1000px;margin:0 auto;padding:max(18px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(24px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+h1,h2,h3{font-family:"Abril Fatface",Georgia,serif;font-weight:400;margin:0 0 10px;line-height:1.05;color:#ffd0e1;text-shadow:0 0 18px #ff2e6355}
+h1{font-size:clamp(38px,8vw,72px);color:#ff5d8f}h2{font-size:clamp(26px,5vw,44px)}h3{font-size:22px}
+.hand{font:600 clamp(20px,3.4vw,30px) "Caveat",cursive;color:#ffb3cf}
+.eb{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--pink);font-weight:700;margin-bottom:6px}
+.note{background:#2a0c1d;border-left:4px solid var(--pink);border-radius:10px;padding:10px 14px;font-size:14px;color:var(--mut);margin:14px 0}
+button,input,select{font:inherit}button{cursor:pointer}textarea:focus-visible{outline:3px solid #fff;outline-offset:2px}button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #fff;outline-offset:2px}
+.btn{border:0;background:linear-gradient(135deg,#ff4d8d,#ff2e63);color:#fff;border-radius:999px;padding:12px 24px;font-weight:700;margin:6px 8px 0 0;box-shadow:0 0 22px #ff2e6355}
+.btn.alt{background:transparent;border:1px solid var(--pink);color:#ffc2d7;box-shadow:none}.btn.sm{padding:7px 15px;font-size:14px}.btn[disabled]{opacity:.4;cursor:not-allowed}
+.card{background:var(--soft);border:1px solid var(--line);border-radius:18px;padding:16px;margin:12px 0}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}.chip{background:#3a1028;border:1px solid var(--line);border-radius:999px;padding:6px 16px;font-weight:600;color:var(--ink)}
+.grid{display:grid;grid-template-columns:1fr auto;gap:24px;align-items:center}@media(max-width:700px){.grid{grid-template-columns:1fr}}
+.big{font:400 clamp(54px,12vw,100px) "Abril Fatface",serif;letter-spacing:.12em;color:#ff5d8f;line-height:1;text-shadow:0 0 28px #ff2e63aa}
+.qr img{width:190px;height:190px;image-rendering:pixelated;background:#fff;padding:10px;border-radius:14px}
+input[type=text],select{width:100%;padding:12px;border:2px solid var(--line);border-radius:12px;background:#12040c;color:var(--ink);margin:6px 0}
+textarea{width:100%;padding:12px;border:2px solid var(--line);border-radius:12px;background:#12040c;color:var(--ink);margin:6px 0;font:inherit;resize:vertical}
+.vb{display:block;width:100%;text-align:left;border-radius:14px;border:2px solid var(--line);background:#2a0c1d;color:var(--ink);padding:14px 16px;margin:8px 0;font-weight:700;font-size:18px}
+.vb.g{border-color:var(--green)}.vb.a{border-color:var(--amber)}.vb.r{border-color:var(--red)}.vb.sel{background:#ff2e63;border-color:#fff}
+.bar{display:grid;grid-template-columns:minmax(90px,200px) 1fr auto;gap:10px;align-items:center;margin:8px 0}.bar i{display:block;height:20px;border-radius:10px;background:var(--pink);min-width:4px}.bar.g i{background:var(--green)}.bar.a i{background:var(--amber)}.bar.r i{background:var(--red)}.bar.top i{box-shadow:0 0 16px #fff9}
+.tvs{min-height:62vh;display:flex;flex-direction:column;justify-content:center;gap:12px}
+.q{font:400 clamp(30px,5.4vw,66px) "Abril Fatface",serif;line-height:1.1;color:#fff;text-shadow:0 0 22px #ff2e63aa}
+.paper{background:#f6ecdc;color:#2a1a12;border-radius:6px;padding:16px 20px;font-size:clamp(16px,2vw,24px);line-height:1.35;box-shadow:0 10px 30px #0008}.paper h3{color:#2a1a12;text-shadow:none}
+.role{display:inline-block;background:#3a1028;border:1px solid var(--pink);border-radius:12px;padding:6px 12px;margin:4px 6px 4px 0}.role b{color:#ff9bbf}
+.tvfull main{max-width:1500px}
+</style>
+</head>
+<body>
+<main id="app"></main>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+<script>
+var CFG={firebaseUrl:"https://game-night-94933-default-rtdb.europe-west1.firebasedatabase.app"};
+
+/* ===== CONTENU ===== Tes situations, accusations et règles (fautes corrigées). Les listes complémentaires (Red Flags, Oui ou non, plus susceptible, Kiss Marry Kill) sont des propositions à valider. */
+var GN={
+ rf:["Il/Elle répond à tes messages seulement plusieurs heures après, mais est actif sur les réseaux.","Il/Elle veut connaître ton mot de passe de téléphone.","Il/Elle n’a aucun ami proche.","Il/Elle garde les cadeaux et affaires que son ex lui a offerts.","Il/Elle est très proche de sa mère et lui raconte tout.","Il/Elle refuse catégoriquement d’utiliser les réseaux sociaux et n’a aucun profil en ligne.","Il refuse que tu rencontres certaines personnes de son entourage sans donner aucun détail.","Il/Elle refuse catégoriquement que tu payes quoi que ce soit lorsque vous êtes ensemble.",
+ "Il/Elle like systématiquement les photos de son ex.","Il/Elle te présente à tous ses amis dès le premier mois.","Il/Elle regarde ton téléphone dès que tu t’éloignes.","Il/Elle te demande ta position en direct tous les soirs.","Il/Elle ne présente jamais ses amis ni sa famille.","Il/Elle commente chacune de tes tenues avant que vous sortiez.","Il/Elle raconte toutes vos disputes à ses amis.","Il/Elle est resté(e) très proche de tous ses ex.","Il/Elle n’a gardé aucun contact avec aucun de ses ex.","Il/Elle est toujours « occupé(e) » le week-end sans jamais expliquer pourquoi.","Il/Elle a un compte secret sur les réseaux sociaux.","Il/Elle te demande de choisir entre lui/elle et tes amies.","Il/Elle te dit « tu exagères » à chaque fois que tu exprimes une émotion.","Il/Elle envoie un vocal de 8 minutes à chaque message.","Il/Elle est jaloux(se) dès que tu parles à un de tes amis.","Il/Elle ne veut jamais sortir avec tes amies.","Il/Elle ne sait jamais dire « désolé(e) ».","Il/Elle disparaît après un week-end parfait, puis revient comme si de rien n’était.","Il/Elle est resté(e) sur les applis de rencontre « juste pour voir ».","Il/Elle regarde son téléphone pendant tout le dîner.","Il/Elle fait semblant de ne pas te connaître devant ses collègues.","Il/Elle a déjà choisi le prénom de vos futurs enfants au deuxième rendez-vous.","Il/Elle te dit dès le premier message qu’il/elle est « pas comme les autres ».","Il/Elle te fait payer l’addition à chaque fois, sans exception.","Il/Elle offre un cadeau très cher dès le premier rendez-vous.","Il/Elle te réveille en pleine nuit pour s’excuser après une dispute.","Il/Elle pleure à chaque film.","Il/Elle ne parle que de lui/d’elle.","Il/Elle change de sujet dès que tu parles d’avenir.","Il/Elle appelle sa mère devant toi pour lui demander son avis sur tout.","Il/Elle te répond en moins de 30 secondes, tout le temps, même la nuit.","Il/Elle a besoin d’être rassuré(e) toutes les heures.","Il/Elle n’a jamais eu de relation sérieuse, à 35 ans.","Il/Elle se souvient de tous les petits détails que tu lui as racontés.","Il/Elle te demande de supprimer certains de tes amis des réseaux.","Il/Elle te prête sa veste, mais jamais son téléphone."],
+ yn:["Il invite son ex, avec qui il est très proche, à son mariage.","Tu fouilles le téléphone de ton copain parce que tu as un doute.","Tu dis à ton amie que son copain a été vu avec une autre fille.","Tu restes amie avec l’ex de ton copain.","Tu pardonnes une première infidélité.","Tu sors avec l’ex d’une amie, deux ans après leur rupture.","Tu acceptes de partager ta position en direct avec ton copain, en permanence.","Tu acceptes qu’il garde une photo de son ex dans son téléphone.","Tu annules une soirée entre copines pour un rendez-vous avec ton crush.","Tu dis à une amie que son mec n’est pas fait pour elle, sans qu’elle te le demande.","Tu pars en vacances avec quelqu’un que tu fréquentes depuis un mois.","Tu demandes le mot de passe du téléphone de ton copain.","Tu déménages dans une autre ville pour ton copain.","Tu bloques ton ex sur tous les réseaux.","Tu es toujours en contact avec ton ex.","Tu paies l’addition au premier rendez-vous.","Tu écris en premier après un rendez-vous.","Tu gardes le secret d’une amie, même si ça peut faire du mal à quelqu’un.","Tu prends le parti de ton amie même quand elle a tort.","Tu dis « je t’aime » en premier.","Tu vas à l’anniversaire de l’ex de ton copain.","Tu acceptes une demande en mariage au bout de six mois.","Tu réponds à un message de ton ex à 2 heures du matin.","Tu lis les messages d’une amie sur son téléphone resté déverrouillé.","Tu invites ton ex à ton anniversaire.","Tu avoues à ta meilleure amie que tu as un crush sur son frère.","Tu acceptes que ton copain sorte seul avec sa meilleure amie.","Tu reprends ton ex pour la troisième fois.","Tu vas à un rendez-vous d’une appli de rencontre sans prévenir personne.","Tu supprimes une photo de toi que ton copain a postée sans te demander."],
+ su:["Se marier en première ?","Devenir riche ?","Commencer une dispute pour rien ?","Finir en garde à vue ?","Révéler un secret sans faire exprès ?","Devenir psychopathe ?","Survivre à une apocalypse ?","Mourir en première en cas d’apocalypse ?","Vendre ses pieds ?","Avoir un crush sur le mec de sa pote ?",
+ "Pleurer à un mariage ?","Oublier l’anniversaire de sa meilleure amie ?","Stalker l’ex de son mec ?","Se perdre dans sa propre ville ?","Arriver en retard à son propre mariage ?","Rester amie avec tous ses ex ?","Faire un scandale dans un restaurant ?","S’endormir en pleine soirée ?","Pleurer devant un film Disney ?","Partir vivre à l’étranger sur un coup de tête ?","Se faire tatouer en vacances ?","Dépenser tout son salaire en une journée ?","Devenir influenceuse ?","Se faire virer de son travail ?","Ghoster quelqu’un après un super rendez-vous ?","Se remettre avec son ex ?","Envoyer un message à la mauvaise personne ?","Pleurer en public ?","Garder un secret jusqu’à la fin de sa vie ?","Rater son train ?","Perdre son téléphone en soirée ?","Mentir sur son âge ?","Danser sur une table ?","Tomber amoureuse d’un inconnu en vacances ?","Se marier à Las Vegas ?","Tout plaquer pour un mec rencontré la veille ?","Devenir célèbre ?","Rire au pire moment possible ?","Se disputer avec un serveur ?","Se faire poursuivre par un animal ?"],
+ km:[["Le mec parfait sur le papier, mais sans aucun humour","Le bad boy charmant, jamais disponible","Le meilleur ami secrètement amoureux de toi"],["Ton ex le plus toxique","Ton crush du lycée, dix ans plus tard","Un inconnu rencontré en vacances"],["Un prince charmant ruiné","Un milliardaire sans aucune conversation","Un artiste fauché mais passionné"],["Le meilleur pote de ton frère","Le frère de ta meilleure amie","Le voisin de palier"],["Ton premier amour","Ton plus gros regret","Ton dernier ex"],["Un pompier musclé","Un médecin toujours de garde","Un pilote jamais là"],["Le chanteur de ton groupe préféré","L’acteur de ta série favorite","Le héros de ton roman préféré"],["Un mec qui cuisine incroyablement bien mais ronfle","Un mec drôle mais radin","Un mec riche mais jaloux"],["Ton boss","Ton collègue préféré","Le stagiaire"],["Un mec qui ne répond jamais","Un mec qui répond en deux secondes à tout","Un mec qui envoie des vocaux de dix minutes"],["Le plus beau mec de ta salle de sport","Ton coach sportif","Le serveur de ton café habituel"],["Un homme de dix ans de plus que toi","Un homme de dix ans de moins que toi","Un homme de ton âge qui vit encore chez sa mère"],["Le crush de ta meilleure amie","L’ex de ta meilleure amie","Le meilleur ami de ta meilleure amie"],["Un cow-boy du Texas","Un surfeur australien","Un banquier suisse"],["Un vampire romantique","Un loup-garou protecteur","Un fantôme élégant"],["Ton ancien prof de sport","Ton ancien prof de maths","Ton ancien prof de français"]],
+ tr:[
+  {t:"La soirée annulée pour le copain",acc:"Elle fait passer son mec avant ses amies.",f:["Les filles avaient prévu leur soirée depuis trois semaines. Restaurant réservé, tout le monde s’était organisé. Deux heures avant, l’accusée annonce qu’elle ne vient finalement plus parce que son copain, qu’elle n’a pas vu depuis plusieurs jours, lui propose une soirée ensemble au dernier moment."]},
+  {t:"La voleuse de crush",acc:"L’accusée aurait dû prendre ses distances par respect pour son amie.",f:["La victime confie à l’accusée qu’elle trouve l’un de ses collègues très attirant. Pourtant, elle n’a jamais osé l’approcher et lui non plus n’a jamais tenté quoi que ce soit.","Lors d’une soirée, le collègue en question approche spontanément l’accusée. Elle ne découvre de qui il s’agit qu’au cours de la conversation.","Problème : entre eux, le feeling est immédiat. Ils discutent longtemps, flirtent clairement et semblent vraiment se plaire."]},
+  {t:"Le retour avec l’ex toxique",acc:"L’accusée abandonne son amie au moment où elle a le plus besoin d’elle.",f:["Pendant des mois, la victime a énormément soutenu l’accusée après une rupture compliquée : appels tard le soir, conseils, sorties pour lui changer les idées, longues discussions… Elle était présente à chaque fois que l’accusée allait mal à cause de cette relation.","Malgré tout, l’accusée décide finalement de retourner avec son ex. Fatiguée de revoir la même histoire recommencer, la victime prend ses distances."]},
+  {t:"Le mensonge protecteur",acc:"L’accusée aurait dû prévenir son amie immédiatement et la laisser décider elle-même quoi faire.",f:["Lors d’une soirée, l’accusée aperçoit le copain de la victime très proche d’une autre fille. Elle décide pourtant de ne rien dire immédiatement à la victime. Pendant plusieurs jours, elle essaie d’en savoir plus avant de l’alerter, par peur de provoquer une dispute ou de détruire une relation sur la base d’un simple doute.","Quand la victime apprend finalement que son amie était au courant depuis un moment, elle lui reproche de lui avoir caché une information aussi importante."]}],
+ M:{rf:{n:"Red Flags",s:"Green flag… ou red flag ?",r:["Une situation apparaît à l’écran.","Tout le monde vote en même temps : green flag ou red flag.","Pas le droit de copier sur les autres.","Certaines devront défendre leur choix, puis on débat."],end:"Aucun jugement… enfin, presque."},
+    yn:{n:"Oui ou non",s:"Sans débattre… ou presque.",r:["Une situation apparaît à l’écran.","Tout le monde répond oui ou non, sans débattre avant.","Les réponses de chacune s’affichent ensuite.","Là, on a le droit de se justifier."],end:"Pas de débat… enfin, presque."},
+    su:{n:"Qui est la plus susceptible de…",s:"Qui ferait ça en premier ?",r:["Une situation apparaît à l’écran.","Tout le monde vote en même temps.","Désignez la personne qui correspond le plus.","Le vote de chacune s’affiche : préparez-vous à justifier votre choix."],end:"Aucun vote n’est personnel… enfin presque."},
+    km:{n:"Kiss · Marry · Kill",s:"3 choix. 3 destins. Aucun retour en arrière.",r:["Trois choix apparaissent à l’écran.","Attribuez Kiss, Marry et Kill : une fois chacun.","Aucun retour en arrière.","On compare ensuite les destins de chacune."],end:"Choisissez bien…"},
+    tr:{n:"Le Tribunal des copines",s:"Coupable… ou innocente ?",r:["Une accusation apparaît à l’écran.","Deux joueuses s’affrontent : la défense et l’accusation.","Chacune plaide pour son camp.","Le jury vote : coupable ou innocente."],end:"Aucune affaire n’est simple entre copines…"}}
+};
+GN.wc=["Une chose que je n’ai jamais osé avouer à mon ex…","Mon pire moment de honte en soirée…","Un truc complètement irrationnel qui me rend jalouse…","Ma pire erreur en amour…","Un secret que mes copines ne savent pas encore…","Le message que j’ai regretté d’avoir envoyé…","Mon pire rendez-vous galant…","Une chose que je fais en cachette…","Ma pire excuse pour annuler une sortie…","Ce que je pense vraiment du dernier mec que j’ai fréquenté…","Ma plus grosse crise de jalousie…","Un red flag que j’ai ignoré…","Un mensonge que j’ai raconté à un rendez-vous…","Ce que je n’avouerai jamais à ma belle-famille…","Ma pire habitude quand je suis amoureuse…","Quelque chose que j’ai stalké et que je n’aurais pas dû…","Le truc le plus fou que j’ai fait pour un mec…","Ce qui me fait honte dans mon téléphone…","Ma plus grosse jalousie envers une amie…","Un fantasme de vie que je n’ai jamais dit à personne…"];
+GN.kq=[
+ {q:"Son pire défaut en amour ?",o:["Jalouse","Têtue","Distante","Dramatique"]},
+ {q:"Son premier réflexe après une rupture ?",o:["Pleurer sous la couette","Sortir en soirée","Stalker son ex","Faire comme si de rien n’était"]},
+ {q:"Sa pire habitude en soirée ?",o:["Danser sur les tables","Disparaître sans prévenir","Raconter la vie de tout le monde","S’endormir sur un canapé"]},
+ {q:"Que ferait-elle à un premier rendez-vous ?",o:["Arriver en avance","Arriver en retard","Annuler au dernier moment","Venir avec une copine en renfort"]},
+ {q:"Son plus gros mensonge du quotidien ?",o:["« J’arrive dans 5 minutes »","« Je n’ai rien dépensé »","« Je n’ai pas vu ton message »","« Je ne suis pas jalouse »"]},
+ {q:"Comment réagit-elle pendant une dispute ?",o:["Elle crie","Elle boude","Elle prend du recul","Elle s’excuse en premier"]},
+ {q:"Ce qui la fait craquer chez quelqu’un ?",o:["L’humour","Les mains","La voix","Le parfum"]},
+ {q:"Ce qu’elle déteste le plus chez un date ?",o:["Qu’il parle de son ex","Qu’il regarde son téléphone","Qu’il soit radin","Qu’il ne fasse aucun effort"]},
+ {q:"Son pire défaut en amitié ?",o:["Répondre trop tard","Oublier les anniversaires","Dire trop la vérité","Annuler souvent"]},
+ {q:"Son plan parfait un vendredi soir ?",o:["Resto entre filles","Soirée en boîte","Film sous la couette","Apéro chez quelqu’un"]},
+ {q:"Le texto qu’elle envoie le plus souvent ?",o:["« T’es où ? »","« Tu dors ? »","« On se voit quand ? »","« Tu as vu ça ?! »"]},
+ {q:"Son pire moment de honte ?",o:["Tomber en public","Envoyer un message à la mauvaise personne","Se tromper de prénom","Pleurer en public"]},
+ {q:"Son rapport à ses ex ?",o:["Zéro contact","Amie avec certains","Stalk régulier","Elle en parle encore"]},
+ {q:"Comment finit-elle une soirée ?",o:["Dernière debout","Première partie","Au kebab","Endormie sur un canapé"]},
+ {q:"Son plus gros point faible ?",o:["Les soldes","Les séries","Les bad boys","Les desserts"]},
+ {q:"Avec 1 million d’euros, elle…",o:["Voyage partout","Investit","Dépense tout","Offre à ses proches"]},
+ {q:"Quel genre de crush a-t-elle eu ?",o:["Le meilleur ami","Le bad boy","Le collègue","L’inaccessible"]},
+ {q:"Son week-end idéal ?",o:["À la plage","À la montagne","En ville","À la maison"]},
+ {q:"Son premier réflexe en cas de problème ?",o:["En parler à ses copines","Tout garder pour elle","Chercher sur internet","Appeler sa mère"]},
+ {q:"Son rapport à l’heure ?",o:["Toujours en avance","10 minutes de retard","30 minutes de retard","Tellement en retard qu’on ne l’attend plus"]},
+ {q:"Sur les réseaux, elle est plutôt…",o:["Stalkeuse silencieuse","Reine des stories","Jamais connectée","Commentatrice officielle"]},
+ {q:"En voyage, elle…",o:["Prévoit tout","Improvise","Perd ses affaires","Dort tout le temps"]},
+ {q:"Face à quelqu’un qui lui plaît…",o:["Elle fait le premier pas","Elle attend","Elle envoie ses copines","Elle devient muette"]},
+ {q:"Sa plus grande peur en amour ?",o:["Être trompée","Être seule","S’engager","S’ennuyer"]},
+ {q:"Face à un secret…",o:["Elle le garde","Elle le dit à une seule personne","Elle craque en 24 h","Elle l’écrit quelque part"]},
+ {q:"Le « je t’aime », elle le dit…",o:["En premier","En dernier","Jamais en premier","Beaucoup trop vite"]},
+ {q:"Sa réaction face à un message sans réponse ?",o:["Elle relance","Elle fait la morte","Elle en parle à ses copines","Elle stalke ses réseaux"]},
+ {q:"Son pire talent caché ?",o:["Chanter faux avec assurance","Tout stalker en 5 minutes","Retrouver n’importe quel ex","Garder une rancune"]},
+ {q:"Dans le groupe, elle est…",o:["La mère de famille","La fêtarde","La confidente","La drama queen"]},
+ {q:"Son plus gros rêve ?",o:["Une maison à la campagne","Faire le tour du monde","Réussir sa carrière","Fonder une famille"]}];
+GN.tx=["Il t’a laissée en vu depuis 2 jours.","Ton ex vient de poster une photo avec quelqu’un.","Le mec que tu fréquentes depuis 3 semaines te dit qu’il « n’est pas prêt pour quelque chose de sérieux ».","Ton crush a liké la photo d’une autre à 3 h du matin.","Ton ex t’écrit « Salut, tu vas bien ? » après 8 mois de silence.","Ta copine annule une soirée pour la troisième fois d’affilée.","Il répond « 👍 » à ton long message.","Ton date t’a dit « on se rappelle » et ne t’a jamais rappelée.","Tu découvres que le mec qui te plaît a une copine.","Ton ex te demande de lui rendre ses affaires.","Une amie a invité ton ex à son anniversaire sans te prévenir.","Il te dit « j’ai trop kiffé ma soirée avec toi » et disparaît 5 jours.","Ton crush te répond uniquement par des « mdr ».","Ta meilleure amie sort avec quelqu’un depuis 2 mois sans t’en avoir parlé.","Il te propose de « rester amis » après trois rendez-vous.","Ton ex vient de se fiancer.","Tu te fais ghoster après un super week-end.","Tu apprends qu’il garde encore des photos de son ex.","Une amie t’apprend que ton ex est de retour sur les applis de rencontre.","Il te dit « j’ai besoin d’espace » à 23 h 47."];
+GN.M.wr={n:"Qui a écrit ça ?",s:"Une confession. Qui l’a écrite ?",r:["Chacune écrit en secret une confession sur son téléphone.","Les confessions s’affichent une par une à l’écran, sans nom.","Devinez qui l’a écrite : votez pour l’auteure.","Celle qui est démasquée avoue… ou nie jusqu’au bout."],end:"Mentir est autorisé. Rougir aussi."};
+GN.M.kn={n:"Qui me connaît le mieux ?",s:"Tu crois vraiment la connaître ?",r:["Une joueuse est à l’honneur : elle répond en secret à une question sur elle.","Les autres devinent sa réponse parmi 4 choix.","On révèle la bonne réponse et qui l’a trouvée.","À la fin, le classement des meilleures amies s’affiche."],end:"L’amitié se mesure en bonnes réponses."};
+GN.M.tx={n:"Le texto à ne pas envoyer",s:"Tape-le. Ne l’envoie surtout pas.",r:["Une situation apparaît à l’écran.","Chacune écrit en secret le texto à ne SURTOUT pas envoyer.","Tous les textos s’affichent sans nom : votez pour le pire.","On dévoile qui l’a écrit."],end:"Interdiction d’envoyer pour de vrai."};
+var LBL={wc:"Qui a écrit ça ? · écriture",wr:"Qui a écrit ça ?",kn:"Qui me connaît le mieux ?",ksc:"Classement des meilleures amies",tc:"Texto · écriture",tv:"Texto · vote"},NOREV=["intro","wc","tc","ksc"],DR={};
+var MODES=["rf","yn","su","wr","tx","kn","km","tr"],KA=["K","M","X"],KN={K:"Kiss",M:"Marry",X:"Kill"};
+var RF_OPT=[["g","Green flag"],["r","Red flag"]],YN_OPT=[["o","Oui"],["n","Non"]];
+
+/* ---------- utilitaires ---------- */
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+function $(i){return document.getElementById(i)}
+function dig(o,a){for(var i=0;i<a.length;i++){if(o==null)return null;o=o[a[i]]}return o==null?null:o}
+function put(o,a,v){for(var i=0;i<a.length-1;i++){if(o[a[i]]==null||typeof o[a[i]]!=="object")o[a[i]]={};o=o[a[i]]}o[a[a.length-1]]=v}
+function rnd(n){return Math.floor(Math.random()*n)}
+function sh(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=rnd(i+1),t=a[i];a[i]=a[j];a[j]=t}return a}
+
+var T;
+if(CFG.firebaseUrl){var base=CFG.firebaseUrl.replace(/\/$/,"");T={demo:false,
+ set:function(p,v){return fetch(base+"/"+p+".json",{method:"PUT",body:JSON.stringify(v)})},
+ get:function(p){return fetch(base+"/"+p+".json").then(function(r){return r.json()})}}}
+else{T={demo:true,
+ set:function(p,v){var d={};try{d=JSON.parse(localStorage.getItem("gn")||"{}")}catch(e){}put(d,p.split("/"),v);localStorage.setItem("gn",JSON.stringify(d));return Promise.resolve()},
+ get:function(p){var d={};try{d=JSON.parse(localStorage.getItem("gn")||"{}")}catch(e){}return Promise.resolve(dig(d,p.split("/")))}}}
+
+var pid=sessionStorage.getItem("pid");if(!pid){pid=Math.random().toString(36).slice(2,8);sessionStorage.setItem("pid",pid)}
+var qs=new URLSearchParams(location.search);
+var tvCode=(qs.get("tv")||"").toUpperCase(),hostQ=(qs.get("host")||"").toUpperCase();
+if(hostQ){sessionStorage.setItem("host",hostQ);sessionStorage.setItem("hk"+hostQ,qs.get("k")||"")}
+var hostCode=sessionStorage.getItem("host"),pairCode=sessionStorage.getItem("pair");
+var hash=location.hash.slice(1).toUpperCase();
+var mode=tvCode?"tv":(hash&&hash!==hostCode?"player":(hostCode?"host":(pairCode?"pair":"home")));
+var code=tvCode||(mode==="player"?hash:(mode==="pair"?pairCode:hostCode));
+var last=null,S=null,V=null,hkOK=null;
+function room(){return "rooms/"+code}
+function plIds(){return Object.keys(dig(S,["players"])||{})}
+function pn(id){return esc(dig(S,["players",id,"n"])||"?")}
+function pnr(id){return dig(S,["players",id,"n"])||"?"}
+function votes(st){return (V&&V[st])||{}}
+function qrFor(u,sz){try{var q=qrcode(0,"M");q.addData(u);q.make();return '<div class="qr">'+q.createImgTag(sz||5,0)+'</div>'}catch(e){return ''}}
+function demoNote(){return T.demo?'<p class="note"><strong>Mode démo.</strong> Les joueurs ouvrent la page dans d’autres onglets du même navigateur.</p>':''}
+function ctl(p){var c=Object.assign({phase:"lobby",step:0,rev:false},dig(S,["ctl"])||{},p);return T.set(room()+"/ctl",c).then(function(){last=null;tick()})}
+
+function tick(){
+ if(!code||mode==="pair"||mode==="home")return;
+ if(mode==="host"){
+  if(hkOK===null){hkOK=0;T.get("hk/"+code).then(function(t){hkOK=(!t||t===sessionStorage.getItem("hk"+code))?1:-1}).catch(function(){hkOK=1});return}
+  if(hkOK===-1){$("app").innerHTML='<h2>Lien animatrice invalide</h2><p>Rescanne le QR code affiché sur l’ordinateur qui a créé la partie.</p>';return}
+  if(hkOK!==1)return}
+ Promise.all([T.get(room()),T.get("votes/"+code)]).then(function(r){
+  var k=JSON.stringify(r);if(k===last)return;
+  var a=document.activeElement;if(a&&/INPUT|SELECT|TEXTAREA/.test(a.tagName))return;
+  last=k;S=r[0];V=r[1];view()
+ }).catch(function(){$("app").innerHTML='<h2>Connexion impossible</h2><p>Vérifie la connexion ou le réglage de la base.</p>'})
+}
+setInterval(tick,1000);
+
+/* ---------- accueil et préparation ---------- */
+function home(){
+ $("app").innerHTML='<div class="eb">Girls Night · test</div><h1>Soirée jeux</h1><p class="hand">Préparez-vous pour une nuit de rires, de drames et de vérités.</p><p>Red Flags, Oui ou non, Qui est la plus susceptible de…, Qui a écrit ça ?, Qui me connaît le mieux ?, Le texto à ne pas envoyer, Kiss Marry Kill, Le Tribunal des copines : tout le monde joue sur son téléphone, les résultats s’affichent sur l’écran.</p><button class="btn" id="mk">Créer une partie</button>'+demoNote();
+ $("mk").onclick=function(){var A="ABCDEFGHJKMNPQRSTUVWXYZ",c="";for(var i=0;i<4;i++)c+=A[rnd(A.length)];
+  var tk=Math.random().toString(36).slice(2,10);
+  Promise.all([T.set("rooms/"+c,{ctl:{phase:"lobby",step:0,rev:false}}),T.set("hk/"+c,tk)]).then(function(){sessionStorage.setItem("hk"+c,tk);sessionStorage.setItem("pair",c);pairCode=c;code=c;mode="pair";pairView()})}
+}
+function pairView(){
+ var b=location.origin+location.pathname,hu=b+"?host="+code+"&k="+sessionStorage.getItem("hk"+code);
+ $("app").innerHTML='<div class="eb">Partie '+code+' créée</div><h1>Prépare ta soirée</h1><div class="grid"><div><h3>1. Ton téléphone devient la console animatrice</h3><p>Scanne ce QR code avec <strong>ton</strong> téléphone : tu y règles la partie et fais défiler les écrans. Ne le montre à personne.</p></div>'+qrFor(hu,5)+'</div><div class="card"><h3>2. Cet ordinateur devient l’écran de la télé</h3><p>Branche-le à la télé (HDMI ou projection), puis clique ci-dessous.</p><button class="btn" id="gtv">Afficher l’écran TV</button></div><details class="card"><summary>Pas de téléphone pour l’animatrice ?</summary><p>Tu peux piloter depuis cet ordinateur, et ouvrir l’écran TV dans un autre onglet.</p><button class="btn alt" id="gho">Piloter depuis cet ordinateur</button></details><p><a href="#" id="gnw" style="color:var(--mut)">Annuler et créer une autre partie</a></p>'+demoNote();
+ $("gtv").onclick=function(){location.href=location.pathname+"?tv="+code};
+ $("gho").onclick=function(){sessionStorage.setItem("host",code);sessionStorage.removeItem("pair");location.reload()};
+ $("gnw").onclick=function(e){e.preventDefault();sessionStorage.removeItem("pair");location.reload()}
+}
+
+/* ---------- construction de la soirée ---------- */
+function selModes(){try{var a=JSON.parse(sessionStorage.getItem("gm"+code));if(a)return a}catch(e){}return MODES.slice()}
+function launch(){
+ var ids=plIds(),sel=selModes(),steps=[],np=ids.length;
+ function ix(x,i){return i}
+ MODES.forEach(function(m){
+  if(sel.indexOf(m)<0)return;
+  steps.push({t:"intro",m:m});
+  if(m==="tr"){sh(GN.tr.map(ix)).forEach(function(i){var p=sh(ids),n=p.length,o={t:"tr",i:i,acc:p[0],vic:p[1]};
+   if(n>=5){o.av1=p[2];o.av2=p[3];o.jury=p.slice(4)}else o.jury=p.slice(2);steps.push(o)})}
+  else if(m==="wr"){var k=steps.length;steps.push({t:"wc",p:rnd(GN.wc.length)});for(var j=0;j<np;j++)steps.push({t:"wr",c:k,f:0})}
+  else if(m==="tx"){sh(GN.tx.map(ix)).slice(0,2).forEach(function(p){var k=steps.length;steps.push({t:"tc",p:p});steps.push({t:"tv",c:k,p:p,f:0})})}
+  else if(m==="kn"){var per=np<=4?3:np<=6?2:1,pool=sh(GN.kq.map(ix)),q=0;sh(ids).forEach(function(id){for(var j=0;j<per;j++)steps.push({t:"kn",s:id,i:pool[q++%pool.length]})});steps.push({t:"ksc"})}
+  else sh(GN[m].map(ix)).forEach(function(i){steps.push({t:m,i:i})})});
+ T.set(room()+"/steps",steps).then(function(){return ctl({phase:"play",step:0,rev:false})})
+}
+function nxt(o){for(var i=o.n+1;i<o.st.length;i++){if(!o.st[i].skip)return i}return -1}
+function prv(o){for(var i=o.n-1;i>=0;i--){if(!o.st[i].skip)return i}return -1}
+function advance(o){
+ var st=o.st.slice(),n=o.n,s=o.s,p=Promise.resolve();
+ if(s&&(s.t==="wc"||s.t==="tc")&&st[n+1]&&st[n+1].c===n&&!st[n+1].f){
+  var vs=votes(n),au=Object.keys(vs).filter(function(id){return String(vs[id]||"").trim()});
+  if(s.t==="wc"){var a=sh(au);for(var j=0;st[n+1+j]&&st[n+1+j].c===n;j++){st[n+1+j]=j<a.length?{t:"wr",a:a[j],c:n,p:s.p,f:1}:{t:"wr",c:n,skip:1,f:1}}}
+  else st[n+1]=au.length>=2?{t:"tv",c:n,p:s.p,o:sh(au),f:1}:{t:"tv",c:n,skip:1,f:1};
+  p=T.set(room()+"/steps",st)}
+ return p.then(function(){var i=n+1;while(st[i]&&st[i].skip)i++;if(!st[i])return ctl({phase:"end"});return ctl({step:i,rev:false})})
+}
+function knScores(){var sc={};plIds().forEach(function(id){sc[id]=0});(dig(S,["steps"])||[]).forEach(function(s,k){if(s.t!=="kn")return;var vs=votes(k),a=vs[s.s];if(a==null)return;Object.keys(vs).forEach(function(id){if(id!==s.s&&vs[id]===a)sc[id]=(sc[id]||0)+1})});return sc}
+function stepOf(){var st=dig(S,["steps"])||[],n=dig(S,["ctl","step"])||0;return {st:st,n:n,s:st[n]}}
+function role(o,id){if(o.acc===id)return "acc";if(o.vic===id)return "vic";if(o.av1===id)return "av1";if(o.av2===id)return "av2";return "jury"}
+var ROLE_TXT={acc:["L’accusée","Défends-toi et donne ta version."],vic:["La victime","Explique comment tu l’as vécu."],av1:["L’avocate de l’accusation","Prouve qu’elle est coupable."],av2:["L’avocate de la défense","Prouve qu’elle est innocente."],jury:["Le jury","Écoute les arguments, puis vote : coupable ou innocente."]};
+function voters(s){if(s.t==="tr")return s.jury||[];if(s.t==="intro"||s.t==="ksc")return[];if(s.t==="wr")return plIds().filter(function(i){return i!==s.a});return plIds()}
+function tally(vs){var c={};Object.keys(vs).forEach(function(id){var v=vs[id];c[v]=(c[v]||0)+1});return c}
+function names(ids){return ids.map(pn).join(", ")}
+function bar(cls,label,k,tot,top){return '<div class="bar '+cls+(top?' top':'')+'"><span>'+label+'</span><i style="width:'+(tot?Math.max(2,Math.round(k/tot*100)):0)+'%"></i><strong>'+k+'</strong></div>'}
+
+/* ---------- affichage partagé (écran TV) ---------- */
+function resultHtml(s,n){
+ var vs=votes(n),tot=Object.keys(vs).length,h="",c=tally(vs);
+ if(s.t==="rf"||s.t==="yn"){
+  var O=s.t==="rf"?RF_OPT:YN_OPT,cl=s.t==="rf"?{g:"g",r:"r"}:{o:"g",n:"r"},max=Math.max.apply(null,O.map(function(o){return c[o[0]]||0}));
+  h+=O.map(function(o){var k=c[o[0]]||0;return bar(cl[o[0]],o[1],k,tot,k===max&&k>0)}).join("");
+  if(s.t==="yn"){h+=O.map(function(o){var w=Object.keys(vs).filter(function(id){return vs[id]===o[0]});return '<p><strong>'+o[1]+' :</strong> '+(w.length?names(w):"personne")+'</p>'}).join("")}
+  else{var tops=O.filter(function(o){return (c[o[0]]||0)===max&&max>0});
+   if(tops.length===1){var mins=Object.keys(vs).filter(function(id){return vs[id]!==tops[0][0]});if(mins.length)h+='<p class="hand">À vous de défendre votre choix : '+names(mins)+'</p>'}
+   else if(max>0)h+='<p class="hand">Égalité ! Débat immédiat.</p>'}}
+ else if(s.t==="su"){
+  var ids=plIds().slice().sort(function(a,b){return (c[b]||0)-(c[a]||0)}),mx=c[ids[0]]||0;
+  h+=ids.map(function(id){var k=c[id]||0,from=Object.keys(vs).filter(function(x){return vs[x]===id});return bar("",pn(id),k,tot,k===mx&&k>0)+(from.length?'<p style="margin:-4px 0 6px;color:var(--mut)">← '+names(from)+'</p>':'')}).join("");
+  if(mx>0)h+='<p class="hand">'+names(ids.filter(function(id){return (c[id]||0)===mx}))+', justifie-toi…</p>'}
+ else if(s.t==="km"){
+  GN.km[s.i].forEach(function(txt,j){h+='<div class="card"><strong>'+esc(txt)+'</strong>'+KA.map(function(a){var w=Object.keys(vs).filter(function(id){return (vs[id]||"").charAt(j)===a});return '<p style="margin:4px 0"><b>'+KN[a]+' :</b> '+(w.length?names(w):"—")+'</p>'}).join("")+'</div>'})}
+ else if(s.t==="wr"){
+  var cands=plIds().filter(function(i){return i!==s.a}).sort(function(a,b){return (c[b]||0)-(c[a]||0)}),mw=c[cands[0]]||0;
+  h+=cands.map(function(id){var k=c[id]||0;return bar("",pn(id),k,tot,k===mw&&k>0)}).join("");
+  var gw=Object.keys(vs).filter(function(id){return vs[id]===s.a});
+  h+='<p class="hand">C’était '+pn(s.a)+' !</p><p>'+(gw.length?'Bien deviné : '+names(gw):'Personne n’a trouvé…')+'</p>'}
+ else if(s.t==="kn"){
+  var Q=GN.kq[s.i],ans=vs[s.s];
+  if(ans==null)h+='<p class="hand">'+pn(s.s)+' n’a pas répondu.</p>';
+  else{h+=Q.o.map(function(o,j){var w=Object.keys(vs).filter(function(id){return id!==s.s&&vs[id]===String(j)}),ok=String(j)===ans;return '<div class="card" style="'+(ok?'border-color:var(--green);background:#0f3a22':'')+'"><strong>'+String.fromCharCode(65+j)+'. '+esc(o)+'</strong>'+(ok?' ✓ réponse de '+pn(s.s):'')+(w.length?'<p style="margin:4px 0;color:var(--mut)">'+names(w)+'</p>':'')+'</div>'}).join("");
+   var gd=Object.keys(vs).filter(function(id){return id!==s.s&&vs[id]===ans});
+   h+='<p class="hand">'+(gd.length?'Bien joué : '+names(gd):'Personne ne la connaît !')+'</p>'}}
+ else if(s.t==="tv"){
+  var od=s.o||[],cs=votes(s.c),it=od.slice().sort(function(a,b){return (c[b]||0)-(c[a]||0)}),mt=c[it[0]]||0;
+  h+=it.map(function(a){var k=c[a]||0,fr=Object.keys(vs).filter(function(x){return vs[x]===a});return '<div class="paper" style="margin:8px 0'+(k===mt&&k>0?';box-shadow:0 0 0 3px #ff4d8d,0 10px 30px #0008':'')+'"><strong>'+esc(cs[a]||"")+'</strong><div style="font-size:.7em;margin-top:6px;color:#8a3a5a">'+pn(a)+' · '+k+' vote'+(k>1?'s':'')+(fr.length?' ← '+names(fr):'')+'</div></div>'}).join("");
+  if(mt>0)h+='<p class="hand">Le pire texto de la soirée : '+names(it.filter(function(a){return (c[a]||0)===mt}))+'</p>'}
+ else if(s.t==="tr"){
+  var cp=c.c||0,inn=c.i||0;
+  h+=bar("r","Coupable",cp,tot,cp>inn)+bar("g","Innocente",inn,tot,inn>cp)+'<p class="hand">'+(cp>inn?"Le jury déclare "+pn(s.acc)+" coupable.":inn>cp?"Le jury déclare "+pn(s.acc)+" innocente.":"Égalité : le jury doit trancher.")+'</p>'}
+ return h
+}
+function stepHtml(s,n,tv){
+ var rev=!!dig(S,["ctl","rev"]),vs=votes(n),nv=Object.keys(vs).length,nt=voters(s).length,h="";
+ var prog='<p style="color:var(--mut)">'+nv+' / '+nt+' ont voté</p>';
+ if(s.t==="intro"){var m=GN.M[s.m];return '<div class="eb">Girls Night</div><h1>'+esc(m.n)+'</h1><p class="hand">'+esc(m.s)+'</p><div class="card"><h3>Comment jouer ?</h3><ol>'+m.r.map(function(x){return '<li>'+esc(x)+'</li>'}).join("")+'</ol></div><p class="hand">'+esc(m.end)+'</p>'}
+ if(s.t==="wc"||s.t==="tc"){var isw=s.t==="wc";
+  h='<div class="eb">'+(isw?"Qui a écrit ça ?":"Le texto à ne pas envoyer")+'</div><div class="q">'+esc(isw?GN.wc[s.p]:GN.tx[s.p])+'</div><p class="hand">'+(isw?"Écris ta confession sur ton téléphone, sans te nommer.":"Écris le texto que tu ne devrais surtout PAS envoyer.")+'</p>';
+  return h+(tv?'<p style="color:var(--mut)">'+nv+' / '+nt+' ont écrit</p>':"")}
+ if(s.t==="wr"){var wt=votes(s.c)[s.a]||"";
+  h='<div class="eb">Qui a écrit ça ?</div><div class="paper" style="margin:8px 0"><div class="eb" style="color:#8a3a5a">'+esc(GN.wc[s.p])+'</div><p style="font-size:1.3em;margin:6px 0">« '+esc(wt)+' »</p></div>';
+  if(rev)return h+resultHtml(s,n);return h+(tv?prog:"")}
+ if(s.t==="tv"){var od=s.o||[],cs=votes(s.c);
+  h='<div class="eb">Le texto à ne pas envoyer</div><h2>'+esc(GN.tx[s.p])+'</h2>';
+  if(rev)return h+resultHtml(s,n);
+  if(tv)h+=od.map(function(a,j){return '<div class="paper" style="margin:8px 0"><strong>'+String.fromCharCode(65+j)+'.</strong> '+esc(cs[a]||"")+'</div>'}).join("")+prog;
+  return h}
+ if(s.t==="kn"){var Q=GN.kq[s.i];
+  h='<div class="eb">Qui connaît le mieux '+pn(s.s)+' ?</div><div class="q">'+esc(Q.q)+'</div>';
+  if(rev)return h+resultHtml(s,n);
+  if(tv)h+=Q.o.map(function(o,j){return '<div class="card"><strong>'+String.fromCharCode(65+j)+'.</strong> '+esc(o)+'</div>'}).join("")+prog;
+  return h}
+ if(s.t==="ksc"){var sc=knScores(),ids=plIds().slice().sort(function(a,b){return sc[b]-sc[a]}),mx=sc[ids[0]]||0;
+  h='<div class="eb">Qui me connaît le mieux ?</div><h2>Le classement des meilleures amies</h2>'+ids.map(function(id){return bar("",pn(id),sc[id],Math.max(mx,1),sc[id]===mx&&mx>0)}).join("");
+  return h+(mx>0?'<p class="hand">'+names(ids.filter(function(id){return sc[id]===mx}))+' : la meilleure amie du groupe !</p>':"")}
+ if(s.t==="rf"||s.t==="yn"||s.t==="su"){
+  var lab=s.t==="rf"?"Red Flags":s.t==="yn"?"Oui ou non · sans débattre… ou presque":"Qui est la plus susceptible de…",txt=GN[s.t][s.i];
+  h='<div class="eb">'+lab+'</div><div class="q">'+esc(txt)+'</div>';
+  if(rev)return h+resultHtml(s,n);
+  if(tv)h+=(s.t!=="su"?'<div class="chips">'+(s.t==="rf"?RF_OPT:YN_OPT).map(function(o){return '<span class="chip">'+o[1]+'</span>'}).join("")+'</div>':"")+prog;
+  return h}
+ if(s.t==="km"){
+  h='<div class="eb">Kiss · Marry · Kill</div><h2>3 choix. 3 destins.</h2>'+GN.km[s.i].map(function(x){return '<div class="card"><div class="q" style="font-size:clamp(22px,3.6vw,44px)">'+esc(x)+'</div></div>'}).join("");
+  if(rev)return '<div class="eb">Kiss · Marry · Kill</div>'+resultHtml(s,n);
+  return h+(tv?prog:"")}
+ var c=GN.tr[s.i];
+ h='<div class="eb">Le Tribunal des copines · Affaire du jour</div><h2>'+esc(c.t)+'</h2><div class="paper"><h3>Les faits</h3>'+c.f.map(function(x){return '<p>'+esc(x)+'</p>'}).join("")+'<h3>Accusation</h3><p><strong>'+esc(c.acc)+'</strong></p></div>';
+ h+='<div style="margin-top:10px">'+[["acc",s.acc],["vic",s.vic],["av1",s.av1],["av2",s.av2]].filter(function(x){return x[1]}).map(function(x){return '<span class="role"><b>'+ROLE_TXT[x[0]][0]+'</b> : '+pn(x[1])+'</span>'}).join("")+'<span class="role"><b>Le jury</b> : '+(s.jury||[]).map(pn).join(", ")+'</span></div>';
+ h+=rev?resultHtml(s,n):(tv?prog:"");return h}
+
+function tvView(){
+ document.body.classList.remove("tvfull");
+ if(!S){$("app").innerHTML='<h2>Code introuvable</h2>';return}
+ var ph=dig(S,["ctl","phase"])||"lobby",h="";
+ if(ph==="lobby")h='<div class="grid"><div><div class="eb">Girls Night</div><h1>Rejoignez la partie</h1><div class="big">'+code+'</div><div class="chips">'+plIds().map(function(i){return '<span class="chip">'+pn(i)+'</span>'}).join("")+'</div></div>'+qrFor(location.origin+location.pathname+"#"+code,5)+'</div>';
+ else if(ph==="play"){document.body.classList.add("tvfull");var o=stepOf();h='<div class="tvs">'+(o.s?stepHtml(o.s,o.n,true):"")+'</div>'}
+ else h='<div class="tvs"><h1>Merci d’avoir joué</h1><p class="hand">Aucun jugement… enfin, presque.</p></div>';
+ $("app").innerHTML=h
+}
+
+/* ---------- joueuse ---------- */
+var KS={};
+function playerView(){
+ if(!S||!S.ctl){$("app").innerHTML='<h2>Code introuvable</h2><p>Vérifie le code affiché sur l’écran.</p>';return}
+ var me=dig(S,["players",pid]),ph=S.ctl.phase;
+ if(!me){
+  if(ph!=="lobby"){$("app").innerHTML='<h2>Partie déjà lancée</h2><p>Demande à l’animatrice de créer une nouvelle partie.</p>';return}
+  $("app").innerHTML='<div class="eb">Girls Night</div><h2>Rejoindre '+esc(code)+'</h2><p>Entre ton prénom.</p><input type="text" id="nm" maxlength="20" placeholder="Ton prénom" autocomplete="given-name"><button class="btn" id="jn">Rejoindre</button>';
+  $("jn").onclick=function(){var n=$("nm").value.trim();if(n)T.set(room()+"/players/"+pid,{n:n}).then(function(){last=null;tick()})};return}
+ var h='<div class="eb">Girls Night · '+esc(me.n)+'</div>';
+ if(ph==="lobby")h+='<h2>Tu es dans la partie</h2><p>Regarde l’écran : on va bientôt commencer.</p>';
+ else if(ph==="end")h+='<h2>Merci d’avoir joué</h2><p class="hand">Aucun jugement… enfin, presque.</p>';
+ else{
+  var o=stepOf(),s=o.s;if(!s){$("app").innerHTML=h;return}
+  var rev=!!S.ctl.rev,mine=votes(o.n)[pid];
+  h+=stepHtml(s,o.n,false);
+  if(s.t==="tr"){var r=role(s,pid);h+='<div class="card"><h3>Ton rôle : '+ROLE_TXT[r][0]+'</h3><p>'+ROLE_TXT[r][1]+'</p></div>'}
+  var canVote=s.t!=="intro"&&s.t!=="ksc"&&s.t!=="wc"&&s.t!=="tc"&&(s.t!=="tr"||role(s,pid)==="jury")&&!(s.t==="wr"&&s.a===pid);
+  if(s.t==="intro"||s.t==="ksc")h+='<p class="hand">Regarde l’écran.</p>';
+  else if(s.t==="wr"&&s.a===pid&&!rev)h+='<div class="card"><strong>C’est ta confession !</strong> Garde ton air innocent…</div>';
+  else if(s.t==="wc"||s.t==="tc"){var dv=DR[o.n]!=null?DR[o.n]:(mine||"");
+   h+='<textarea id="tx" maxlength="'+(s.t==="wc"?160:200)+'" rows="4" placeholder="Écris ici…">'+esc(dv)+'</textarea><button class="btn" id="ts">'+(mine?"Modifier":"Envoyer")+'</button>'+(mine?'<p class="hand">Envoyé ✓ Tu peux encore le modifier.</p>':'')}
+  else if(canVote&&!rev){
+   if(mine)h+='<div class="card"><strong>Vote enregistré.</strong> Attends la révélation.</div>';
+   if(s.t==="km"){
+    var ks=KS[o.n]||(KS[o.n]=["","",""]),cur=mine?mine.split(""):ks;
+    h+=mine?'':'<h3>Attribue Kiss, Marry et Kill</h3>';
+    if(!mine)h+=GN.km[s.i].map(function(x,j){return '<div class="card"><strong>'+esc(x)+'</strong><div>'+KA.map(function(a){return '<button class="btn sm '+(ks[j]===a?'':'alt')+' ka" data-o="'+j+'" data-a="'+a+'">'+KN[a]+'</button>'}).join("")+'</div></div>'}).join("")+'<button class="btn" id="kv"'+(ks.every(Boolean)?'':' disabled')+'>Valider</button>';
+    else h+=GN.km[s.i].map(function(x,j){return '<p><strong>'+KN[cur[j]]+' :</strong> '+esc(x)+'</p>'}).join("")}
+   else{
+    if(!mine)h+='<h3>'+(s.t==="rf"?"Ton vote":s.t==="yn"?"Ta réponse":s.t==="su"?"Qui est la plus susceptible ?":s.t==="wr"?"Qui a écrit ça ?":s.t==="kn"?(pid===s.s?"Réponds pour toi":"Que va répondre "+pnr(s.s)+" ?"):s.t==="tv"?"Vote pour le pire texto":"Ton verdict")+'</h3>';
+    var opts=s.t==="rf"?RF_OPT.map(function(o){return [o[0],o[1],o[0]==="g"?"g":"r"]}):s.t==="yn"?YN_OPT.map(function(o){return [o[0],o[1],o[0]==="o"?"g":"r"]}):s.t==="su"?plIds().map(function(id){return [id,pnr(id),""]}):s.t==="wr"?plIds().filter(function(i){return i!==s.a}).map(function(id){return [id,pnr(id),""]}):s.t==="kn"?GN.kq[s.i].o.map(function(t,j){return [String(j),String.fromCharCode(65+j)+". "+t,""]}):s.t==="tv"?(s.o||[]).filter(function(a){return a!==pid}).map(function(a){return [a,String.fromCharCode(65+(s.o||[]).indexOf(a))+". "+(votes(s.c)[a]||""),""]}):[["c","Coupable","r"],["i","Innocente","g"]];
+    h+=opts.map(function(o){return '<button class="vb '+o[2]+(mine===o[0]?' sel':'')+'" data-v="'+esc(o[0])+'"'+(mine?' disabled':'')+'>'+esc(o[1])+'</button>'}).join("")}}
+  else if(s.t==="tr"&&!canVote&&!rev)h+='<p class="hand">Le jury va voter après vos plaidoiries.</p>'
+ }
+ $("app").innerHTML=h;
+ Array.prototype.forEach.call(document.querySelectorAll(".vb"),function(b){b.onclick=function(){var o=stepOf();T.set("votes/"+code+"/"+o.n+"/"+pid,b.getAttribute("data-v")).then(function(){last=null;tick()})}});
+ Array.prototype.forEach.call(document.querySelectorAll(".ka"),function(b){b.onclick=function(){var o=stepOf(),ks=KS[o.n],j=+b.getAttribute("data-o"),a=b.getAttribute("data-a"),old=ks[j];
+  if(ks[j]===a){ks[j]=""}else{for(var k=0;k<3;k++)if(ks[k]===a)ks[k]=old;ks[j]=a}playerView()}});
+ if($("kv"))$("kv").onclick=function(){var o=stepOf();T.set("votes/"+code+"/"+o.n+"/"+pid,KS[o.n].join("")).then(function(){last=null;tick()})};
+ if($("tx"))$("tx").oninput=function(){DR[stepOf().n]=this.value};
+ if($("ts"))$("ts").onclick=function(){var o=stepOf(),v=$("tx").value.trim();if(!v)return;DR[o.n]=v;T.set("votes/"+code+"/"+o.n+"/"+pid,v).then(function(){last=null;tick()})}
+}
+
+/* ---------- animatrice ---------- */
+function hostView(){
+ var ph=dig(S,["ctl","phase"])||"lobby",ids=plIds(),h="",tvUrl=location.origin+location.pathname+"?tv="+code;
+ if(!S){$("app").innerHTML='<h2>Code introuvable</h2>';return}
+ if(ph==="lobby"){
+  var sel=selModes();
+  h='<div class="eb">Console animatrice</div><h1>Salon '+code+'</h1><p>Chaque joueuse scanne le QR code de la télé (ou tape le code) et entre son prénom.</p><div class="big">'+code+'</div>'+qrFor(location.origin+location.pathname+"#"+code,4)+'<h3 style="margin-top:14px">Joueuses ('+ids.length+')</h3><div class="chips">'+(ids.length?ids.map(function(i){return '<span class="chip">'+pn(i)+'</span>'}).join(""):'<span style="color:var(--mut)">En attente…</span>')+'</div><div class="card"><strong>Jeux de la soirée</strong>'+MODES.map(function(m){return '<label style="display:block;margin:8px 0"><input type="checkbox" class="gm" data-m="'+m+'" '+(sel.indexOf(m)>-1?"checked":"")+' style="margin-right:8px">'+GN.M[m].n+'</label>'}).join("")+'<p style="color:var(--mut);font-size:14px;margin:6px 0 0">En cours de soirée, tu pourras passer d’un jeu à l’autre quand tu veux.</p></div><div class="card"><strong>Lien de l’écran TV</strong><p style="word-break:break-all">'+tvUrl+'</p></div><button class="btn" id="go"'+(ids.length>=3&&ids.length<=12?'':' disabled')+'>Lancer la soirée</button><p style="color:var(--mut);font-size:14px">De 3 à 12 joueuses.</p>'+demoNote()}
+ else if(ph==="play"){
+  var o=stepOf(),s=o.s,rev=!!S.ctl.rev,vs=votes(o.n),vt=s?voters(s):[];
+  var label=!s?"":s.t==="intro"?"Règles : "+GN.M[s.m].n:s.t==="tr"?"Tribunal : "+GN.tr[s.i].t:LBL[s.t]||GN.M[s.t].n;
+  h='<div class="eb">Console animatrice · '+code+'</div><h2>Écran '+(o.n+1)+' / '+o.st.length+'</h2><div class="card"><strong>'+esc(label)+'</strong>'+(s&&(s.t==="rf"||s.t==="yn"||s.t==="su")?'<p>'+esc(GN[s.t][s.i])+'</p>':'')+(s&&s.t==="km"?'<ol>'+GN.km[s.i].map(function(x){return '<li>'+esc(x)+'</li>'}).join("")+'</ol>':'')+(s&&s.t==="kn"?'<p>'+esc(GN.kq[s.i].q)+' — sur <strong>'+pn(s.s)+'</strong></p>':'')+(s&&s.t==="wr"?'<p>Auteure : <strong>'+pn(s.a)+'</strong> (secret !)</p>':'')+(s&&(s.t==="wc"||s.t==="tc")?'<p>'+esc(s.t==="wc"?GN.wc[s.p]:GN.tx[s.p])+'</p>':'')+(s&&s.t==="tr"?'<p>Accusée : <strong>'+pn(s.acc)+'</strong> · Victime : <strong>'+pn(s.vic)+'</strong>'+(s.av1?' · Avocates : '+pn(s.av1)+' (accusation), '+pn(s.av2)+' (défense)':'')+'</p><p style="color:var(--mut)">Accusation : '+esc(GN.tr[s.i].acc)+'</p>':'')+'</div>';
+  if(s&&s.t!=="intro"&&s.t!=="ksc")h+='<div class="card"><strong>'+(s.t==="wc"||s.t==="tc"?"Textes reçus : ":"Votes : ")+''+Object.keys(vs).length+' / '+vt.length+'</strong><div class="chips">'+vt.map(function(id){return '<span class="chip" style="opacity:'+(vs[id]!=null?1:.4)+'">'+pn(id)+(vs[id]!=null?" ✓":"")+'</span>'}).join("")+'</div>'+(rev?resultHtml(s,o.n):"")+'</div>';
+  h+='<button class="btn alt" id="pv"'+(prv(o)>=0?'':' disabled')+'>Précédent</button>'+(s&&NOREV.indexOf(s.t)<0&&!rev?'<button class="btn" id="rv">Révéler</button>':'')+(nxt(o)>=0?'<button class="btn" id="nx">Suivant</button>':'<button class="btn" id="fin">Terminer la soirée</button>');
+  var intros=o.st.map(function(x,i){return x.t==="intro"?i:-1}).filter(function(i){return i>=0});
+  h+='<div class="card" style="margin-top:16px"><strong>Changer de jeu</strong><p style="color:var(--mut);margin:4px 0">Quand elles en ont assez, passe directement à un autre jeu.</p>'+intros.map(function(i){var m=o.st[i].m;return '<button class="btn sm alt jmp" data-i="'+i+'">'+esc(GN.M[m].n)+'</button>'}).join("")+'</div>'}
+ else h='<h2>Soirée terminée</h2><p>Merci d’avoir animé !</p>';
+ $("app").innerHTML=h;
+ Array.prototype.forEach.call(document.querySelectorAll(".gm"),function(c){c.onchange=function(){var a=[];Array.prototype.forEach.call(document.querySelectorAll(".gm"),function(x){if(x.checked)a.push(x.getAttribute("data-m"))});sessionStorage.setItem("gm"+code,JSON.stringify(a))}});
+ if($("go"))$("go").onclick=launch;
+ var o2=stepOf();
+ if($("pv"))$("pv").onclick=function(){ctl({step:Math.max(0,prv(o2)),rev:false})};
+ if($("nx"))$("nx").onclick=function(){advance(o2)};
+ if($("rv"))$("rv").onclick=function(){ctl({rev:true})};
+ if($("fin"))$("fin").onclick=function(){ctl({phase:"end"})};
+ Array.prototype.forEach.call(document.querySelectorAll(".jmp"),function(b){b.onclick=function(){ctl({step:+b.getAttribute("data-i"),rev:false})}})
+}
+
+function view(){if(mode==="host")hostView();else if(mode==="tv")tvView();else if(mode==="player")playerView()}
+window.addEventListener("hashchange",function(){location.reload()});
+if(mode==="home")home();else if(mode==="pair")pairView();else tick();
+</script>
+</body>
+</html>
