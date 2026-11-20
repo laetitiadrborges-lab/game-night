@@ -33,9 +33,11 @@ textarea{width:100%;padding:12px;border:2px solid var(--line);border-radius:12px
 .paper{background:#f6ecdc;color:#2a1a12;border-radius:6px;padding:16px 20px;font-size:clamp(16px,2vw,24px);line-height:1.35;box-shadow:0 10px 30px #0008}.paper h3{color:#2a1a12;text-shadow:none}
 .role{display:inline-block;background:#3a1028;border:1px solid var(--pink);border-radius:12px;padding:6px 12px;margin:4px 6px 4px 0}.role b{color:#ff9bbf}
 .tvfull main{max-width:1500px}
+#tb{display:flex;justify-content:space-between;align-items:center;gap:12px;max-width:1000px;margin:0 auto;padding:14px 16px 0}#tb[hidden]{display:none}#tb a{text-decoration:none;font-weight:700}#tb nav{display:flex;gap:18px;align-items:center}#tb .lg{font-size:15px;letter-spacing:.08em;text-transform:uppercase}#tb a{color:var(--pink);font-size:13px;letter-spacing:.08em;text-transform:uppercase}#tb a:focus-visible{outline:3px solid var(--pink);outline-offset:2px}
 </style>
 </head>
 <body>
+<header id="tb" hidden><a class="lg" href="index.html">Nom provisoire</a><nav><a href="index.html">Accueil</a><a href="index.html#lesjeux">Les jeux</a></nav></header>
 <main id="app"></main>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
 <script>
@@ -150,7 +152,7 @@ setInterval(tick,1000);
 
 /* ---------- accueil et préparation ---------- */
 function home(){
- $("app").innerHTML='<div class="eb">Girls Night · test</div><h1>Soirée jeux</h1><p class="hand">Préparez-vous pour une nuit de rires, de drames et de vérités.</p><p>Red Flags, Oui ou non, Qui est la plus susceptible de…, Qui a écrit ça ?, Qui me connaît le mieux ?, Le texto à ne pas envoyer, Kiss Marry Kill, Le Tribunal des copines : tout le monde joue sur son téléphone, les résultats s’affichent sur l’écran.</p><button class="btn" id="mk">Créer une partie</button>'+demoNote();
+ $("app").innerHTML='<div class="eb">Entre filles</div><h1>Girls Night</h1><p class="hand">Préparez-vous pour une nuit de rires, de drames et de vérités.</p><p>Red Flags, Oui ou non, Qui est la plus susceptible de…, Qui a écrit ça ?, Qui me connaît le mieux ?, Le texto à ne pas envoyer, Kiss Marry Kill, Le Tribunal des copines : tout le monde joue sur son téléphone, les résultats s’affichent sur l’écran.</p><button class="btn" id="mk">Créer une partie</button>'+demoNote();
  $("mk").onclick=function(){var A="ABCDEFGHJKMNPQRSTUVWXYZ",c="";for(var i=0;i<4;i++)c+=A[rnd(A.length)];
   var tk=Math.random().toString(36).slice(2,10);
   Promise.all([T.set("rooms/"+c,{ctl:{phase:"lobby",step:0,rev:false}}),T.set("hk/"+c,tk)]).then(function(){sessionStorage.setItem("hk"+c,tk);sessionStorage.setItem("pair",c);pairCode=c;code=c;mode="pair";pairView()})}
@@ -356,6 +358,7 @@ function hostView(){
 
 function view(){if(mode==="host")hostView();else if(mode==="tv")tvView();else if(mode==="player")playerView()}
 window.addEventListener("hashchange",function(){location.reload()});
+var tb=document.getElementById("tb");if(tb&&(mode==="home"||mode==="pair"))tb.hidden=false;
 if(mode==="home")home();else if(mode==="pair")pairView();else tick();
 </script>
 </body>

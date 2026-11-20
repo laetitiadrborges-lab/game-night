@@ -48,9 +48,11 @@ body.noir select,body.noir input,body.noir textarea{border-radius:2px;border-col
 #phs.full .fw{position:fixed;inset:0;display:flex;align-items:center;justify-content:center}#phs.full iframe{width:min(100vw,177.78vh);border-radius:0}
 @media (orientation:portrait){#phs.full .fw{inset:auto;top:0;left:100%;width:100vh;height:100vw;transform-origin:0 0;transform:rotate(90deg)}#phs.full iframe{width:min(100vh,177.78vw)}}
 .tvfull main{max-width:1500px;padding:10px}
+#tb{display:flex;justify-content:space-between;align-items:center;gap:12px;max-width:1000px;margin:0 auto;padding:14px 16px 0}#tb[hidden]{display:none}#tb a{text-decoration:none;font-weight:700}#tb nav{display:flex;gap:18px;align-items:center}#tb .lg{font-size:15px;letter-spacing:.08em;text-transform:uppercase}#tb a{color:var(--acc);font-family:"Cinzel",Georgia,serif;font-size:13px;letter-spacing:.1em;text-transform:uppercase}#tb a:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
 </style>
 </head>
 <body class="noir">
+<header id="tb" hidden><a class="lg" href="index.html">Nom provisoire</a><nav><a href="index.html">Accueil</a><a href="index.html#lesjeux">Les jeux</a></nav></header>
 <main id="app"></main>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
 <script>
@@ -444,6 +446,7 @@ function playerView(){
 
 function view(){var th=S&&S.ctl&&S.ctl.phase&&S.ctl.phase!=="lobby";document.body.classList.add("noir");if(mode==="host")hostView();else if(mode==="tv")tvView();else if(mode==="player")playerView()}
 window.addEventListener("hashchange",function(){location.reload()});
+var tb=document.getElementById("tb");if(tb&&(mode==="home"||mode==="pair"))tb.hidden=false;
 if(mode==="home")home();else if(mode==="pair")pairView();else tick();
 </script>
 </body>
