@@ -33,7 +33,7 @@ ul{padding-left:20px;margin:6px 0}
 details summary{cursor:pointer;padding:2px 0}
 .sl{width:100%;display:block;border-radius:14px}.cd{position:fixed;right:24px;bottom:24px;background:rgba(20,10,40,.88);color:#fff;font:700 clamp(36px,6vw,80px) Georgia,serif;padding:8px 24px;border-radius:18px}
 .ref{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;margin:8px 0 12px}.ref figure{margin:0;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--bg)}.ref img{display:block;width:100%;aspect-ratio:1.2;object-fit:cover}.ref figcaption{font-size:13px;font-weight:600;padding:6px 8px;text-align:center}
-body.noir{--bg:#0a0f1e;--soft:#121b38;--ink:#f3ead6;--mut:#b3a98f;--line:#3b3a52;--acc:#e8bd55;--onacc:#1a1408;--red:#ff8a8a;background:radial-gradient(90% 60% at 80% 0%,#1a2a58,transparent 70%),#0a0f1e;font-family:"Cormorant Garamond",Georgia,serif;font-size:19px}
+body.noir{min-height:100vh;background-repeat:no-repeat;--bg:#0a0f1e;--soft:#121b38;--ink:#f3ead6;--mut:#b3a98f;--line:#3b3a52;--acc:#e8bd55;--onacc:#1a1408;--red:#ff8a8a;background:radial-gradient(90% 60% at 80% 0%,#1a2a58,transparent 70%),#0a0f1e;font-family:"Cormorant Garamond",Georgia,serif;font-size:19px}
 body.noir h1,body.noir h2,body.noir h3,body.noir .eb,body.noir .big,body.noir .btn,body.noir .chip{font-family:"Cinzel",Georgia,serif}
 body.noir h1,body.noir h2{color:#f0cf7e;letter-spacing:.02em}body.noir h3{color:var(--acc);font-size:17px;letter-spacing:.05em}
 body.noir .card,body.noir .row{border:1px solid #e8bd5533}body.noir .btn{border-radius:2px;letter-spacing:.08em;text-transform:uppercase;font-size:13px}body.noir .btn.alt{border-color:var(--acc);color:var(--acc)}
@@ -50,7 +50,7 @@ body.noir select,body.noir input,body.noir textarea{border-radius:2px;border-col
 .tvfull main{max-width:1500px;padding:10px}
 </style>
 </head>
-<body>
+<body class="noir">
 <main id="app"></main>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
 <script>
@@ -122,7 +122,7 @@ function pairView(){
  $("gnw").onclick=function(e){e.preventDefault();sessionStorage.removeItem("pair");location.reload()}
 }
 function home(){
- $("app").innerHTML='<div class="eb">Murder mystery · test</div><h1>La Soirée maudite</h1><p>Distribue des rôles secrets sur les téléphones, donne des indices et des défis, puis recueille les accusations finales. Diapos, armes, lieux, indices, défis et questions de duel sont les tiens. Chaque joueur entre son propre prénom et devient suspect. Les secrets des personnages restent à renseigner.</p><button class="btn" id="mk">Créer une partie</button>'+demoNote();
+ $("app").innerHTML='<div class="eb">Murder mystery</div><h1>La Soirée maudite</h1><p>Un manoir, un meurtre, un seul coupable. Chaque joueur reçoit son rôle secret sur son téléphone, enquête, relève des défis et désigne le coupable.</p><button class="btn" id="mk">Créer une partie</button>'+demoNote();
  $("mk").onclick=function(){var A="ABCDEFGHJKMNPQRSTUVWXYZ",c="";for(var i=0;i<4;i++)c+=A[rnd(A.length)];
   var tk=Math.random().toString(36).slice(2,10);Promise.all([T.set("rooms/"+c,{ctl:{phase:"lobby"}}),T.set("hk/"+c,tk)]).then(function(){sessionStorage.setItem("hk"+c,tk);sessionStorage.setItem("pair",c);pairCode=c;code=c;mode="pair";pairView()})}
 }
@@ -442,7 +442,7 @@ function playerView(){
  if($("as"))$("as").onclick=function(){T.set("sub/"+code+"/"+pid,{k:$("ak").value,w:+$("aw").value,p:+$("ap").value}).then(function(){return T.set(room()+"/done/"+pid,true)}).then(function(){last=null;tick()})}
 }
 
-function view(){var th=S&&S.ctl&&S.ctl.phase&&S.ctl.phase!=="lobby";document.body.classList.toggle("noir",!!th);if(mode==="host")hostView();else if(mode==="tv")tvView();else if(mode==="player")playerView()}
+function view(){var th=S&&S.ctl&&S.ctl.phase&&S.ctl.phase!=="lobby";document.body.classList.add("noir");if(mode==="host")hostView();else if(mode==="tv")tvView();else if(mode==="player")playerView()}
 window.addEventListener("hashchange",function(){location.reload()});
 if(mode==="home")home();else if(mode==="pair")pairView();else tick();
 </script>
