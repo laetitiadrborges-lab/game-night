@@ -38,6 +38,15 @@ body.noir h1,body.noir h2,body.noir h3,body.noir .eb,body.noir .big,body.noir .b
 body.noir h1,body.noir h2{color:#f0cf7e;letter-spacing:.02em}body.noir h3{color:var(--acc);font-size:17px;letter-spacing:.05em}
 body.noir .card,body.noir .row{border:1px solid #e8bd5533}body.noir .btn{border-radius:2px;letter-spacing:.08em;text-transform:uppercase;font-size:13px}body.noir .btn.alt{border-color:var(--acc);color:var(--acc)}
 body.noir select,body.noir input,body.noir textarea{border-radius:2px;border-color:#e8bd5555;background:#0b1328}
+.chn{color:var(--mut);font-size:14px;margin:0 0 8px}
+.chl{max-height:260px;overflow-y:auto;display:grid;gap:6px;margin:0 0 10px;align-content:start}
+.cmsg{background:var(--bg);border:1px solid var(--line);padding:8px 12px;border-radius:12px;overflow-wrap:anywhere}
+body.noir .cmsg{border-radius:2px}
+.chf{display:flex;gap:8px;align-items:center}.chf input{margin:0;flex:1}.chf .btn{margin:0}
+.sc{display:flex;gap:14px;align-items:baseline;justify-content:space-between;flex-wrap:wrap;font-size:22px;margin:6px 0 10px}.sc span:nth-child(2){font-size:14px;color:var(--mut)}
+.dq{font-size:1.2em;margin:.4em 0}
+.dl{padding-left:0;list-style:none;margin:8px 0}.dl li{margin:8px 0;display:flex;gap:10px;justify-content:space-between;align-items:flex-start}.dl .btn{flex:none}
+.ck{display:flex;align-items:center;gap:8px;margin:10px 0}.ck input{width:auto;margin:0}
 #phs{max-width:1000px;margin:0 auto;padding:10px 16px 0}
 #phs .hd{display:flex;gap:8px;align-items:center;justify-content:space-between;margin:0 0 6px}#phs .hd strong{font-family:"Cinzel",Georgia,serif;color:var(--acc);letter-spacing:.08em;font-size:14px}
 #phs .fw{position:relative}#phs iframe{width:100%;aspect-ratio:16/9;border:0;display:block;background:#070b16;border-radius:6px}
@@ -181,14 +190,14 @@ function hostView(){
    h+='<div class="card"><h3>Diaporama TV : '+(cs+1)+' / '+SS.length+' · '+esc(sl.l)+'</h3><button class="btn sm alt" id="sp">Précédent</button><button class="btn sm" id="sn">Suivant</button>'+(sl.t?'<button class="btn sm alt" id="ct">Lancer le chrono ('+sl.t+' s)</button>':'')+(he?'<p><strong>Solution :</strong> <span class="kill">'+esc(he.sol)+'</span></p><button class="btn sm alt" id="rg">Nouvelle version de cette épreuve</button>':'')+'</div>';
    if(L)h+='<div class="card"><strong>Dernier indice envoyé'+(L.who?' à '+esc(L.who):'')+'</strong><br>'+esc(L.t)+(L.e?'<br><span style="color:var(--mut)">Explication : '+esc(L.e)+'</span>':'')+'</div>';
    h+=ids.map(function(id){return '<div class="row"><strong>'+pn(id)+'</strong>'+(id===HS.kp?' <span class="kill">(meurtrière)</span>':'')+' · '+(HS.pts[id]||0)+' pt<br>Indice : <button class="btn sm" data-a="cl" data-c="lieu" data-id="'+id+'">Lieu</button><button class="btn sm" data-a="cl" data-c="arme" data-id="'+id+'">Arme</button><button class="btn sm" data-a="cl" data-c="pers" data-id="'+id+'">Personne</button><button class="btn sm alt" data-a="def" data-id="'+id+'">Nouveau défi</button><button class="btn sm alt" data-a="pt" data-id="'+id+'">+1 pt</button></div>'}).join("");
-   h+='<div class="card"><strong>Duel</strong> : première bonne réponse = 1 point, premier à 3 gagne.<br><button class="btn sm" id="dq">Tirer une question</button>'+(HS.dq?'<p><strong>'+esc(HS.dq[0])+'</strong><br>Réponse : '+esc(HS.dq[1])+'</p>':'')+'</div>';
+   h+='<div id="chatslot"></div>'+duelHtml();
    h+='<details class="card"><summary><strong>Réponses des épreuves</strong></summary>'+(HS.eps||[]).map(function(e){return '<p>'+esc(EPL[e.k].l)+' : <strong>'+esc(e.sol)+'</strong></p>'}).join("")+'</details><details class="card"><summary><strong>Indices d’aide (si le groupe est bloqué)</strong></summary><ul>'+SC.aide.map(function(a){return '<li>'+esc(a)+'</li>'}).join("")+'</ul></details><button class="btn" id="acc">Passer à l’accusation finale</button>';
   }else if(ph==="accuse"){
    var d=Object.keys(dig(S,["done"])||{}).length;
-   h+='<p>Accusations reçues : <strong>'+d+' / '+ids.length+'</strong></p><button class="btn" id="rv">Révéler la solution</button>';
+   h+='<div id="chatslot"></div><p>Accusations reçues : <strong>'+d+' / '+ids.length+'</strong></p><button class="btn" id="rv">Révéler la solution</button>';
   }else{h+=resultHtml()}
  }
- $("app").innerHTML=h;
+ $("app").innerHTML=h;chatAttach();
  if($("phc"))$("phc").onchange=function(){sessionStorage.setItem("ph"+code,$("phc").checked?"1":"0")};
  if($("cpl"))$("cpl").onclick=function(){var t=$("tvl").textContent;try{navigator.clipboard.writeText(t).then(function(){$("cpl").textContent="Lien copié"},function(){$("cpl").textContent="Sélectionne le lien et copie-le"})}catch(e){$("cpl").textContent="Sélectionne le lien et copie-le"}};
  if($("go"))$("go").onclick=launch;
@@ -201,11 +210,82 @@ function hostView(){
  if($("sn"))$("sn").onclick=function(){pub({slide:Math.min(SLS().length-1,cs2+1),t0:null,dur:null})};
  if($("ct"))$("ct").onclick=function(){pub({t0:Date.now(),dur:SLS()[cs2].t})};
  if($("rg"))$("rg").onclick=function(){var ei=cs2-7,ee=HS.eps[ei],ne=newEp(ee.k,plIds().map(pname));if(!ne)return;var pe=(S.eps||[]).map(function(x){return {k:x.k,p:x.p}});pe[ei]={k:ee.k,p:ne.p};HS.eps[ei]={k:ee.k,sol:ne.sol};saveHS();T.set(room()+"/eps",pe).then(function(){last=null;tick()})};
- if($("dq"))$("dq").onclick=function(){var all=SC.duel.map(function(x,i){return i}),left=all.filter(function(i){return HS.dused.indexOf(i)<0});if(!left.length){HS.dused=[];left=all}var i=left[rnd(left.length)];HS.dused.push(i);HS.dq=SC.duel[i];saveHS();hostView()};
+ if($("dgo"))$("dgo").onclick=function(){var a=$("da").value,b=$("db").value;if(a===b){$("dgo").textContent="Choisis deux joueurs différents";return}HS.du={a:a,b:b,sa:0,sb:0,h:[],st:+$("dst").value||3};duelQ();saveHS();hostView()};
+ Array.prototype.forEach.call(document.querySelectorAll("[data-d]"),function(b){b.onclick=function(){var d=HS.du,k=b.dataset.d;
+  if(k==="a"||k==="b"){d["s"+k]++;d.h.push(k);if(d["s"+k]<DUEL_TO)duelQ()}
+  else if(k==="skip")duelQ();
+  else if(k==="undo"){var x=d.h.pop();if(x)d["s"+x]--}
+  else if(k==="end"){HS.du=null;window.dm=""}
+  saveHS();hostView()}});
+ duelLoad();
  Array.prototype.forEach.call(document.querySelectorAll("[data-a]"),function(b){b.onclick=function(){var id=b.dataset.id,a=b.dataset.a;
   if(a==="pt"){HS.pts[id]=(HS.pts[id]||0)+1;saveHS();hostView();return}
   (a==="cl"?giveClue(id,b.dataset.c):newDef(id)).then(function(){if(a==="cl")hostView();else b.textContent="Envoyé ✓"})}})
 }
+
+/* ---------- messages anonymes ---------- */
+var chatNode=null,chatLast=null,chatCool=0;
+function chatEnsure(){
+ if(chatNode)return chatNode;
+ chatNode=document.createElement("div");chatNode.className="card";chatNode.id="chat";
+ chatNode.innerHTML='<h3>Messages anonymes</h3><p class="chn">Tout le monde peut écrire. Personne ne voit qui.</p><div class="chl" id="chlist" aria-live="polite"></div><div class="chf" id="chf"><input id="chin" maxlength="140" placeholder="Ton message anonyme…" autocomplete="off" enterkeyhint="send"><button class="btn sm" id="chsend">Envoyer</button></div><button class="btn sm alt" id="chclr" hidden>Vider les messages</button>';
+ chatNode.querySelector("#chsend").onclick=chatSend;
+ chatNode.querySelector("#chin").onkeydown=function(e){if(e.key==="Enter"){e.preventDefault();chatSend()}};
+ chatNode.querySelector("#chclr").onclick=function(){T.set(room()+"/chat",null).then(function(){chatLast=null;chatPoll()})};
+ return chatNode}
+function chatAttach(){
+ var slot=$("chatslot");if(!slot||!code)return;
+ var n=chatEnsure();slot.appendChild(n);
+ var host=mode==="host";n.querySelector("#chf").hidden=host;n.querySelector("#chclr").hidden=!host;
+ chatLast=null;chatPoll()}
+function chatPoll(){
+ if(!chatNode||!document.body.contains(chatNode))return;
+ T.get(room()+"/chat").then(chatShow).catch(function(){})}
+function chatShow(d){
+ var a=d?Object.keys(d).map(function(k){return d[k]}).filter(function(m){return m&&m.t}).sort(function(x,y){return x.ts-y.ts}).slice(-40):[];
+ var k=JSON.stringify(a);if(k===chatLast)return;chatLast=k;
+ var box=chatNode.querySelector("#chlist"),end=box.scrollHeight-box.scrollTop-box.clientHeight<40||!box.children.length;
+ box.innerHTML=a.length?a.map(function(m){return '<div class="cmsg">'+esc(m.t)+'</div>'}).join(""):'<p class="chn">Aucun message pour l’instant.</p>';
+ if(end)box.scrollTop=box.scrollHeight}
+function chatSend(){
+ var i=chatNode.querySelector("#chin"),t=i.value.trim().slice(0,140),b=chatNode.querySelector("#chsend");
+ if(!t||Date.now()<chatCool)return;
+ chatCool=Date.now()+3000;i.value="";b.disabled=true;setTimeout(function(){b.disabled=false},3000);
+ var key=Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+ T.set(room()+"/chat/"+key,{t:t,ts:Date.now()}).then(function(){chatLast=null;chatPoll()})}
+setInterval(chatPoll,1500);
+/* ---------- duel (console animatrice) ---------- */
+var DUEL_TO=5;
+function duelQ(){var all=SC.duel.map(function(x,i){return i}),left=all.filter(function(i){return HS.dused.indexOf(i)<0});if(!left.length){HS.dused=[];left=all}var i=left[rnd(left.length)];HS.dused.push(i);HS.dq=SC.duel[i]}
+function duelHtml(){
+ var ids=plIds(),d=HS.du,opt=function(sel){return ids.map(function(i){return '<option value="'+i+'"'+(i===sel?' selected':'')+'>'+pn(i)+'</option>'}).join("")};
+ if(!d)return '<div class="card" id="duelc"><h3>Duel</h3><p>Le premier à '+DUEL_TO+' bonnes réponses gagne. Choisis les deux joueurs.</p><label>Joueur 1<select id="da">'+opt(ids[0])+'</select></label><label>Joueur 2<select id="db">'+opt(ids[1])+'</select></label><label>Mise : indices en jeu<select id="dst"><option value="1">1 indice</option><option value="2">2 indices</option><option value="3" selected>3 indices</option></select></label><button class="btn" id="dgo">Lancer le duel</button></div>';
+ var done=d.sa>=DUEL_TO||d.sb>=DUEL_TO,w=d.sa>=DUEL_TO?d.a:d.b,l=w===d.a?d.b:d.a;
+ var h='<div class="card" id="duelc"><h3>Duel : '+pn(d.a)+' contre '+pn(d.b)+'</h3><div class="sc"><span><strong>'+pn(d.a)+'</strong> '+d.sa+'</span><span>premier à '+DUEL_TO+' · mise : '+(d.st||3)+' indice'+((d.st||3)>1?'s':'')+'</span><span>'+d.sb+' <strong>'+pn(d.b)+'</strong></span></div>';
+ if(!done)h+='<p class="dq">'+esc(HS.dq?HS.dq[0]:"")+'</p><p>Réponse : <strong>'+esc(HS.dq?HS.dq[1]:"")+'</strong></p><button class="btn sm" data-d="a">Point '+pn(d.a)+'</button><button class="btn sm" data-d="b">Point '+pn(d.b)+'</button><button class="btn sm alt" data-d="skip">Autre question</button><button class="btn sm alt" data-d="undo">Annuler le dernier point</button><button class="btn sm alt" data-d="end">Arrêter le duel</button>';
+ else h+='<p><strong>'+pn(w)+' gagne le duel</strong> ('+Math.max(d.sa,d.sb)+' à '+Math.min(d.sa,d.sb)+').</p><div id="dtr" data-w="'+w+'" data-l="'+l+'">Chargement des indices…</div><button class="btn sm alt" data-d="undo">Annuler le dernier point</button><button class="btn sm alt" data-d="end">Terminer le duel</button>';
+ return h+'</div>'}
+function duelLists(from,to){return Promise.all([T.get("priv/"+code+"/"+from+"/clues"),T.get("priv/"+code+"/"+to+"/clues")]).then(function(r){var A=r[0]||{},B=r[1]||{},have={};Object.keys(B).forEach(function(k){have[B[k].t]=1});
+ return {A:A,B:B,ks:Object.keys(A).filter(function(k){return !have[A[k].t]}).sort(function(x,y){return +x.slice(1)-+y.slice(1)})}})}
+function duelLoad(){
+ var e=$("dtr");if(!e)return;var w=e.dataset.w,l=e.dataset.l;
+ duelLists(l,w).then(function(r){
+  if(!$("dtr"))return;
+  var h='<p>Indices de '+pn(l)+' que '+pn(w)+' n’a pas encore :</p>';
+  if(!r.ks.length)h+='<p style="color:var(--mut)">Aucun indice disponible à transférer.</p>';
+  else h+='<ul class="dl">'+r.ks.map(function(k){return '<li><span><strong>'+esc(CL[r.A[k].c]||"")+'</strong> · '+esc(r.A[k].t)+'</span><button class="btn sm" data-t="'+k+'">Donner à '+pn(w)+'</button></li>'}).join("")+'</ul><button class="btn sm" data-t="rS">Prendre '+(HS.du.st||3)+' indice'+((HS.du.st||3)>1?'s':'')+' au hasard</button><label class="ck"><input type="checkbox" id="drm"> Retirer aussi l’indice à '+pn(l)+'</label>';
+  h+='<p id="dmsg" style="color:var(--mut)">'+esc(window.dm||"")+'</p>';
+  e.innerHTML=h;
+  Array.prototype.forEach.call(e.querySelectorAll("[data-t]"),function(b){b.onclick=function(){var t=b.dataset.t;duelMove(l,w,t.charAt(0)==="r"?null:[t],HS.du.st||3,$("drm").checked).then(function(c){window.dm=c+" indice"+(c>1?"s":"")+" transféré"+(c>1?"s":"")+" ✓";duelLoad()})}})
+ })}
+function duelMove(from,to,keys,n,rm){
+ return duelLists(from,to).then(function(r){
+  var pick=keys?keys.filter(function(k){return r.ks.indexOf(k)>-1}):sh(r.ks).slice(0,n),w=[];
+  var nx=Object.keys(r.B).reduce(function(m,k){return Math.max(m,+k.slice(1)+1)},HS.cn[to]||0);
+  pick.forEach(function(k){w.push(T.set("priv/"+code+"/"+to+"/clues/c"+nx,{c:r.A[k].c,t:r.A[k].t}));nx++;if(rm)w.push(T.set("priv/"+code+"/"+from+"/clues/"+k,null));HS.last={who:pname(to),t:"Indice reçu par duel : "+r.A[k].t,e:""}});
+  HS.cn[to]=nx;saveHS();
+  return Promise.all(w).then(function(){return pick.length})})}
+
 function resultHtml(){
  var r=dig(S,["result"]);if(!r)return "";
  var w=(r.win||[]).map(pn);
@@ -382,7 +462,7 @@ function(){return '<div class="bg beam"></div><div class="bg black"></div><div c
 function(){return '<div class="bg stars"></div><div class="bg moon" style="top:2cqw;right:4cqw;width:4cqw;height:4cqw"></div><div style="opacity:.55">'+HOUSE+'</div><h2 class="h">Les Suspects</h2><div class="orn"></div><p class="s" style="margin:0">Tous ont un lien avec Gabriel. Tous ont quelque chose à cacher.</p><div class="susrow">'+names.map(function(n,k){return '<div class="sus">'+sil(k)+'<b>'+esc(n)+'</b><i>'+esc(roles[k])+'</i></div>'}).join("")+'</div>'+FT},
 function(){return '<div class="bg warm" style="opacity:.5"></div><h2 class="h">Les Armes Possibles</h2><div class="orn" style="margin:.2cqw auto .6cqw"></div><div class="grid" style="grid-template-columns:repeat(4,1fr);width:74%">'+cards(ARM.slice(0,4),"arm","wp")+'</div><div class="row">'+ARM.slice(4).map(function(x,n){return '<div class="ph wp"><img alt="'+esc(x)+'" src="'+IMG.arm[n+4]+'"><span>'+esc(x)+'</span></div>'}).join("")+'</div>'+FT},
 function(){return '<h2 class="h">Les Lieux Possibles</h2><p class="s" style="margin:0">Dans quelle pièce Gabriel a-t-il été tué ?</p><div class="grid" style="grid-template-columns:repeat(4,1fr);width:80%">'+LIEU.slice(0,4).map(function(x,n){return '<div class="ph lx"><img alt="'+esc(x)+'" src="'+IMG.lieu[n]+'"><span>'+esc(x)+'</span></div>'}).join("")+'</div><div class="row">'+LIEU.slice(4).map(function(x,n){return '<div class="ph lx" style="width:18.6cqw"><img alt="'+esc(x)+'" src="'+IMG.lieu[n+4]+'"><span>'+esc(x)+'</span></div>'}).join("")+'</div>'+FT},
-function(){return '<div class="bg stars"></div><div class="bg warm" style="opacity:.4"></div><h2 class="h">Les Règles du Jeu</h2><p class="s" style="margin:0">Un meurtrier parmi vous. Une seule accusation pour le démasquer.</p><div class="rl"><div><b>01 — Enquêtez</b>Trouvez le coupable, l’arme et le lieu du meurtre. Gardez vos notes dans votre carnet. Vous pouvez échanger des informations et bluffer, mais jamais modifier un indice officiel.</div><div><b>02 — Gagnez des informations</b>Remportez les épreuves ou réussissez vos défis secrets. Le gagnant choisit un indice sur le crime OU un secret sur le suspect de son choix. 1 défi validé = 1 récompense.</div><div><b>03 — Provoquez un duel</b>Défiez un joueur : le premier à 3 bonnes réponses gagne. Une mauvaise réponse laisse la main à l’adversaire. Le perdant montre au gagnant un de ses indices, choisi au hasard.</div><div><b>04 — Accusez au bon moment</b>Les accusations sont autorisées après TOUTES les épreuves sur diaporama. Une seule accusation, définitive et remise en secret : suspect + arme + lieu. La bonne combinaison gagne.</div></div>'+FT}];
+function(){return '<div class="bg stars"></div><div class="bg warm" style="opacity:.4"></div><h2 class="h">Les Règles du Jeu</h2><p class="s" style="margin:0">Un meurtrier parmi vous. Une seule accusation pour le démasquer.</p><div class="rl"><div><b>01 — Enquêtez</b>Trouvez le coupable, l’arme et le lieu du meurtre. Gardez vos notes dans votre carnet. Vous pouvez échanger des informations et bluffer, mais jamais modifier un indice officiel.</div><div><b>02 — Gagnez des informations</b>Remportez les épreuves ou réussissez vos défis secrets. Le gagnant choisit un indice sur le crime OU un secret sur le suspect de son choix. 1 défi validé = 1 récompense.</div><div><b>03 — Provoquez un duel</b>Défiez un joueur : le premier à 5 bonnes réponses gagne. Une mauvaise réponse laisse la main à l’adversaire. Le perdant donne au gagnant un de ses indices.</div><div><b>04 — Accusez au bon moment</b>Les accusations sont autorisées après TOUTES les épreuves sur diaporama. Une seule accusation, définitive et remise en secret : suspect + arme + lieu. La bonne combinaison gagne.</div></div>'+FT}];
 
 function ep(k,p){var f=EP.fbText,h="";
  var cl=function(a,c){return '<ul class="ck '+(c||"")+'">'+a.map(function(x,i){return '<li><b>'+(i+1)+'.</b><span>'+esc(x)+'</span></li>'}).join("")+'</ul>'};
@@ -426,20 +506,21 @@ function playerView(){
  else if(ph==="end")h+=resultHtml()+(dig(S,["result","win"])&&S.result.win.indexOf(pid)>-1?'<h2>Tu as gagné !</h2>':'');
  else if(!P)h+='<p>Chargement de ton rôle…</p>';
  else{
-  h+='<div class="card"><h3>Tu es '+esc(me.n)+'</h3><p>'+esc(myRole(me))+'Invité(e) de Gabriel de Valombre, et suspect(e).</p><p><strong>Ton secret :</strong> à renseigner (document d’animation).</p>'+(P.killer?'<p class="kill">Tu es la meurtrière. Oriente les soupçons ailleurs.</p>':'<p>Tu es innocent(e). Trouve le coupable, l’arme et le lieu.</p>')+'</div>';
+  h+='<div class="card"><h3>Tu es '+esc(me.n)+'</h3>'+(myRole(me)?'<p>'+esc(myRole(me).trim())+'</p>':'')+(P.killer?'<p class="kill">Tu es la meurtrière. Oriente les soupçons ailleurs.</p>':'<p>Tu es innocent(e). Trouve le coupable, l’arme et le lieu.</p>')+'</div>';
   if(ph==="play"){
    var cl=P.clues?Object.keys(P.clues).sort(function(a,b){return +a.slice(1)-+b.slice(1)}):[];
-   h+='<div class="card"><h3>Ton défi secret</h3><p>'+esc(P.def||"—")+'</p><p style="color:var(--mut);font-size:14px">Réussis-le sans le révéler, puis dis-le à l’animatrice.</p></div><div class="card"><h3>Tes indices</h3>'+(cl.length?'<ul>'+cl.map(function(k){var c=P.clues[k];return '<li><strong>'+esc(CL[c.c]||"")+'</strong> · '+esc(c.t)+'</li>'}).join("")+'</ul>':'<p style="color:var(--mut)">Aucun indice pour l’instant.</p>')+'</div><h3>Mes notes</h3><textarea id="nt" rows="4" placeholder="Tes déductions…"></textarea>';
+   h+='<div class="card"><h3>Ton défi secret</h3><p>'+esc(P.def||"—")+'</p><p style="color:var(--mut);font-size:14px">Réussis-le sans le révéler, puis dis-le à l’animatrice.</p></div><div class="card"><h3>Tes indices</h3>'+(cl.length?'<ul>'+cl.map(function(k){var c=P.clues[k];return '<li><strong>'+esc(CL[c.c]||"")+'</strong> · '+esc(c.t)+'</li>'}).join("")+'</ul>':'<p style="color:var(--mut)">Aucun indice pour l’instant.</p>')+'</div><div id="chatslot"></div><h3>Mes notes</h3><textarea id="nt" rows="4" placeholder="Tes déductions…"></textarea>';
   }else if(ph==="accuse"){
    if(dig(S,["done",pid]))h+='<h2>Accusation envoyée</h2><p>Elle est définitive. Attends la révélation.</p>';
    else{var opt=function(a){return a.map(function(x){return '<option value="'+esc(x[0])+'">'+esc(x[1])+'</option>'}).join("")},inf=S.info||{sus:[],arm:[],lieu:[]};
     h+='<h2>Ton accusation définitive</h2><label>Coupable<select id="ak">'+opt(inf.sus.map(function(x){return [x.i,x.n]}))+'</select></label><label>Arme<select id="aw">'+opt(inf.arm.map(function(x,i){return [i,x]}))+'</select></label><label>Lieu<select id="ap">'+opt(inf.lieu.map(function(x,i){return [i,x]}))+'</select></label><button class="btn" id="as">Valider (définitif)</button>'}
   }
  }
+ if(ph==="accuse")h+='<div id="chatslot"></div>';
  if(ph==="play"||ph==="accuse")h+=refHtml();
  var showPh=ph==="play"&&S.info&&S.info.ph;
  $("app").innerHTML=h;
- phoneSlides(!!showPh);
+ phoneSlides(!!showPh);chatAttach();
  var nt=$("nt");if(nt){nt.value=localStorage.getItem("nt"+code+pid)||"";nt.oninput=function(){localStorage.setItem("nt"+code+pid,nt.value)}}
  if($("as"))$("as").onclick=function(){T.set("sub/"+code+"/"+pid,{k:$("ak").value,w:+$("aw").value,p:+$("ap").value}).then(function(){return T.set(room()+"/done/"+pid,true)}).then(function(){last=null;tick()})}
 }
